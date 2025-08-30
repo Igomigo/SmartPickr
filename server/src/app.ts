@@ -3,6 +3,9 @@ import express, { Express } from "express";
 import { EnvGuard } from "env-preflight"; // I wrote this package☺️, find it on https://github.com/Igomigo/env-preflight
 import { envRule } from "./utils/env_rule";
 
+// Routes
+import productRoutes from "./routes/product.routes"
+
 dotenv.config();
 export class App {
   private readonly app: Express;
@@ -16,7 +19,9 @@ export class App {
     this.setUproutes();
   }
 
-  private setUproutes() {}
+  private setUproutes() {
+    this.app.use(`${this.API_PREFIX}`, productRoutes);
+  }
 
   private setupEnvGuard() {
     const envGuard = new EnvGuard(envRule);
