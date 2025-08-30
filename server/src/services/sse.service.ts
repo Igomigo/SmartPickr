@@ -1,22 +1,26 @@
 import { Response } from "express";
 
-export class SSEService {
-  // Step 1: Initialize the SSE connection
-  init(res: Response) {
+export class SSEConnection {
+  private hb?: NodeJS.Timeout;
+
+  constructor(private res: Response, retryMs = 10000) {
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
-    res.flushHeaders(); // Make sure headers are sent immediately
+    res.setHeader("X-Accel-Buffering", "no"); // avoid proxy buffering
+    res.flushHeaders();
+    res.write(`retry: ${retryMs}\n\n`);
+    this.hb = setInterval(() => res.write(`: keep-alive\n\n`), 15000);
+    res.on("close", () => this.end());
   }
 
-  // Step 2: Send an event
-  send(res: Response, eventName: string, data: any) {
-    res.write(`event: ${eventName}\n`);
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  send(event: "summary" | "comparison" | "recommendation", data: unknown) {
+    this.res.write(`event: ${event}\n`);
+    this.res.write(`data: ${JSON.stringify(data)}\n\n`);
   }
 
-  // Step 3: Close the connection
-  close(res: Response) {
-    res.end();
+  end() {
+    if (this.hb) clearInterval(this.hb);
+    this.res.end();
   }
 }
