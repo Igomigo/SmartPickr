@@ -1,19 +1,24 @@
 import { CheerioCrawler } from "crawlee";
+import { logger } from "../../../utils/logger";
 
 class JijiScraper {
-    constructor() {}
+  constructor() {}
 
-    private async getScraper() {
-        const scraper = new CheerioCrawler({
-            requestHandler: async ({ $, request}) => {}
-        });
+  private async createCrawler() {
+    const crawler = new CheerioCrawler({
+      requestHandler: async ({ $, request }) => {
+        logger.log(`Scraping ${request.url}...`);
+      },
+    });
 
-        return scraper;
-    }
+    return crawler;
+  }
 
-    public async runScraper(url: string) {
-        const scraper = await this.getScraper();
-        await scraper.addRequests([ url ]);
-        await scraper.run();
-    }
+  public async scrapeUrl(url: string) {
+    const crawler = await this.createCrawler();
+    await crawler.addRequests([{ url }]);
+    await crawler.run();
+  }
 }
+
+export default new JijiScraper();
