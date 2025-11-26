@@ -2,6 +2,9 @@ import { CheerioCrawler, Request } from "crawlee";
 import { logger } from "../../utils/logger";
 import getSearchUrl from "./helpers/getUrl";
 import { getProductDetails } from "./helpers/getProductDetails";
+import { getReviews } from "./helpers/getReviews";
+import { getReviewsLink } from "./helpers/getReviewsLink";
+import { Product } from "../../types/product";
 
 class JijiScraper {
   constructor() {}
@@ -14,6 +17,7 @@ class JijiScraper {
 
   private async scrapeProductPage() {
     try {
+      let productDetails: Partial<Product> = {};
       const requestHandler = async ({
         $,
         request,
@@ -24,8 +28,17 @@ class JijiScraper {
         logger.log(`Scraping ${request.url}...`);
 
         // Scrape the product page
-        const productDetails = await getProductDetails($);
-        logger.log(`Product details: ${JSON.stringify(productDetails)}`);
+        const details = await getProductDetails($);
+        logger.log(`Product details: ${JSON.stringify(details, null, 2)}`);
+        productDetails = { ...productDetails, ...details };
+
+        // Extract reviews link and get reviews
+        const reviewsPath: string | undefined = await getReviewsLink($);
+        if (reviewsPath) {
+          const reviews = await getReviews(reviewsPath);
+          productDetails.reviews = reviews;
+        }
+
         return productDetails;
       };
 
