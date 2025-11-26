@@ -4,7 +4,7 @@ import getSearchUrl from "./helpers/getUrl";
 import { getProductDetails } from "./helpers/getProductDetails";
 import { getReviews } from "./helpers/getReviews";
 import { getReviewsLink } from "./helpers/getReviewsLink";
-import { Product } from "../../types/product";
+import { Product } from "./types";
 
 class JijiScraper {
   constructor() {}
