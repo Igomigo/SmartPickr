@@ -15,7 +15,7 @@ class JijiScraper {
     });
   }
 
-  private async scrapeProductPage() {
+  public async scrapeProductPage(url: string): Promise<Product> {
     try {
       let productDetails: Partial<Product> = {};
       const requestHandler = async ({
@@ -35,8 +35,13 @@ class JijiScraper {
         // Extract reviews link and get reviews
         const reviewsPath: string | undefined = await getReviewsLink($);
         if (reviewsPath) {
-          const reviews = await getReviews(reviewsPath);
-          productDetails.reviews = reviews;
+          try {
+            const reviews = await getReviews(reviewsPath);
+            productDetails.reviews = reviews;
+          } catch (error) {
+            logger.error(`Error getting reviews: ${(error as Error).message}`);
+            productDetails.reviews = [];
+          }
         }
 
         return productDetails;
@@ -44,14 +49,27 @@ class JijiScraper {
 
       // Create a crawler for the request handler
       const crawler = await this.createCrawler(requestHandler);
-      return crawler;
+      await crawler.addRequests([{ url }]);
+      await crawler.run();
+      
+      // Normalize to a full ready product object
+      const product: Product = {
+        ...productDetails,
+        productImages: productDetails.productImages || [],
+        productTitle: productDetails.productTitle || "",
+        productPrice: productDetails.productPrice || "",
+        productSpecs: productDetails.productSpecs || {},
+        productDescription: productDetails.productDescription || "",
+        reviews: productDetails.reviews || [],
+      };
+      return product;
     } catch (error) {
       logger.error(`Error scraping product page: ${(error as Error).message}`);
       throw error;
     }
   }
 
-  private async scrapeSearchResultsPage() {
+  public async scrapeSearchResultsPage() {
     try {
       const requestHandler = async ({
         $,
@@ -76,32 +94,6 @@ class JijiScraper {
     }
   }
 
-  public async scrapeJiji({
-    url,
-    searchText,
-  }: {
-    url?: string;
-    searchText?: string;
-  }) {
-    try {
-      let crawler: CheerioCrawler;
-      if (url) {
-        crawler = await this.scrapeProductPage();
-        await crawler.addRequests([{ url }]);
-      } else if (searchText) {
-        crawler = await this.scrapeSearchResultsPage();
-        await crawler.addRequests([
-          { url: getSearchUrl(searchText), label: "START_URL" },
-        ]);
-      } else {
-        throw new Error("No URL or search text provided");
-      }
-      await crawler?.run();
-    } catch (error) {
-      logger.error(`Error scraping Jiji: ${(error as Error).message}`);
-      throw error;
-    }
-  }
 }
 
 export default new JijiScraper();
