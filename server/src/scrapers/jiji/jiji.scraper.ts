@@ -1,9 +1,8 @@
 import { CheerioCrawler, Request } from "crawlee";
 import { logger } from "../../utils/logger";
-import getSearchUrl from "./helpers/getUrl";
 import { getProductDetails } from "./helpers/getProductDetails";
 import { getReviews } from "./helpers/getReviews";
-import { getReviewsLink } from "./helpers/getReviewsLink";
+import { getReviewsUrlPath } from "./helpers/getReviewsUrlPath";
 import { Product } from "./types";
 
 class JijiScraper {
@@ -33,7 +32,7 @@ class JijiScraper {
         productDetails = { ...productDetails, ...details };
 
         // Extract reviews link and get reviews
-        const reviewsPath: string | undefined = await getReviewsLink($);
+        const reviewsPath: string | undefined = await getReviewsUrlPath($);
         if (reviewsPath) {
           try {
             const reviews = await getReviews(reviewsPath);

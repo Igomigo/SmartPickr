@@ -24,6 +24,8 @@ export const getProductSpecs = async ($: CheerioAPI) => {
       }
     );
 
+    logger.log(`Initial product specs: ${JSON.stringify(productSpecs, null, 2)}`);
+
     // Get additional product specs if they exist
     $(
       ".b-advert-item-details-collapser__rest-wrapper div.b-advert-attribute"
@@ -32,6 +34,8 @@ export const getProductSpecs = async ($: CheerioAPI) => {
       const value = $(element).find(".b-advert-attribute__value").text().trim();
       productSpecs[key] = value;
     });
+
+    logger.log(`Additional product specs: ${JSON.stringify(productSpecs, null, 2)}`);
 
     return productSpecs;
   } catch (error) {

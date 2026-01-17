@@ -1,0 +1,85 @@
+{
+  "usableSessionsCount": 1,
+  "retiredSessionsCount": 0,
+  "sessions": [
+    {
+      "id": "session_013wVGDdpY",
+      "cookieJar": {
+        "version": "tough-cookie@6.0.0",
+        "storeType": "MemoryCookieStore",
+        "rejectPublicSuffixes": true,
+        "enableLooseMode": false,
+        "allowSpecialUseDomain": true,
+        "prefixSecurity": "silent",
+        "cookies": [
+          {
+            "key": "first_visit",
+            "value": "1764240687",
+            "expires": "2027-11-27T10:51:27.000Z",
+            "maxAge": 63072000,
+            "domain": "jiji.ng",
+            "path": "/",
+            "secure": true,
+            "hostOnly": true,
+            "creation": "2025-11-27T10:51:27.611Z",
+            "lastAccessed": "2025-11-27T10:51:27.611Z"
+          },
+          {
+            "key": "rid",
+            "value": "direct",
+            "expires": "2025-11-27T11:51:27.000Z",
+            "maxAge": 3600,
+            "domain": "jiji.ng",
+            "path": "/",
+            "secure": true,
+            "hostOnly": true,
+            "creation": "2025-11-27T10:51:27.611Z",
+            "lastAccessed": "2025-11-27T10:51:27.611Z"
+          },
+          {
+            "key": "app",
+            "value": "30f51349af0845078995dbb2c99aa39b",
+            "expires": "2026-05-29T10:51:27.000Z",
+            "domain": "jiji.ng",
+            "path": "/",
+            "secure": true,
+            "httpOnly": true,
+            "hostOnly": true,
+            "creation": "2025-11-27T10:51:27.611Z",
+            "lastAccessed": "2025-11-27T10:51:27.611Z"
+          },
+          {
+            "key": "uid",
+            "value": "69282d2f805c58c84d27cf814332cf55bc32197f",
+            "expires": "2026-11-27T10:51:27.000Z",
+            "domain": "jiji.ng",
+            "path": "/",
+            "secure": true,
+            "hostOnly": false,
+            "creation": "2025-11-27T10:51:27.611Z",
+            "lastAccessed": "2025-11-27T10:51:27.611Z"
+          },
+          {
+            "key": "lang",
+            "value": "en",
+            "expires": "2026-11-27T10:51:27.000Z",
+            "domain": "jiji.ng",
+            "path": "/",
+            "hostOnly": true,
+            "creation": "2025-11-27T10:51:27.611Z",
+            "lastAccessed": "2025-11-27T10:51:27.611Z",
+            "sameSite": "lax"
+          }
+        ]
+      },
+      "userData": {},
+      "maxErrorScore": 3,
+      "errorScoreDecrement": 0.5,
+      "expiresAt": "2025-11-27T11:41:25.884Z",
+      "createdAt": "2025-11-27T10:51:25.884Z",
+      "usageCount": 1,
+      "maxUsageCount": 50,
+      "errorScore": 0
+    }
+  ]
+}
