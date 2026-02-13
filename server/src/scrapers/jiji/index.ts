@@ -4,7 +4,7 @@ import { logger } from "../../utils/logger";
 import { Product } from "./types";
 import { getProductDetails } from "./helpers/getProductDetails";
 
-export class JijiScraper {
+class JijiScraper {
   constructor() {}
 
   private async getContext(): Promise<{
@@ -28,3 +28,5 @@ export class JijiScraper {
     }
   }
 }
+
+export default new JijiScraper();
