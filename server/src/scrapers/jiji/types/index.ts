@@ -8,9 +8,9 @@ export interface Product {
   productImages: string[];
   productTitle: string;
   productPrice: string;
-  productSpecs: Record<string, string>;
   productDescription: string;
-  reviews: Review[];
+  productSpecs?: Record<string, string>;
+  productReviews?: Review[];
 }
 
 // API Response structure from Jiji

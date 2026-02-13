@@ -1,4 +1,4 @@
-import jijiScraper from "../scrapers/jiji/jiji.scraper";
+import jijiScraper from "../scrapers/jiji/jiji.scraper.old";
 
 const testjijiScraper = async () => {
   try {

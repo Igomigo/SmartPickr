@@ -1,8 +1,8 @@
 import { CheerioCrawler, Request } from "crawlee";
 import { logger } from "../../utils/logger";
-import { getProductDetails } from "./helpers/getProductDetails";
-import { getReviews } from "./helpers/getReviews";
-import { getReviewsUrlPath } from "./helpers/getReviewsUrlPath";
+import { getProductDetails } from "./helpersOld/getProductDetails";
+import { getReviews } from "./helpersOld/getReviews";
+import { getReviewsUrlPath } from "./helpersOld/getReviewsUrlPath";
 import { Product } from "./types";
 
 class JijiScraper {
@@ -36,10 +36,10 @@ class JijiScraper {
         if (reviewsPath) {
           try {
             const reviews = await getReviews(reviewsPath);
-            productDetails.reviews = reviews;
+            productDetails.productReviews = reviews;
           } catch (error) {
             logger.error(`Error getting reviews: ${(error as Error).message}`);
-            productDetails.reviews = [];
+            productDetails.productReviews = [];
           }
         }
 
@@ -59,7 +59,7 @@ class JijiScraper {
         productPrice: productDetails.productPrice || "",
         productSpecs: productDetails.productSpecs || {},
         productDescription: productDetails.productDescription || "",
-        reviews: productDetails.reviews || [],
+        productReviews: productDetails.productReviews || [],
       };
       return product;
     } catch (error) {
