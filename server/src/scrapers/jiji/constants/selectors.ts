@@ -14,7 +14,6 @@ export const PRODUCT_SPECS_SELECTOR_EXTRA =
 export const PRODUCT_SPECS_SELECTOR_KEY = ".b-advert-attribute__key";
 export const PRODUCT_SPEC_SELECTOR_VALUE = ".b-advert-attribute__value";
 // Reviews selectors
-export const PRODUCT_REVIEWS_SELECTOR =
-  ".b-seller-advert-info__last-feedback__link";
+export const PRODUCT_REVIEWS_SELECTOR = ".b-watch-all";
 export const PRODUCT_REVIEWS_CARD_SELECTOR = ".b-feedback-item-container";
-export const PRODUCT_REVIEWER_COMMENT_SELECTOR = "b-feedback-item__comment";
+export const PRODUCT_REVIEWER_COMMENT_SELECTOR = ".b-feedback-item__comment";

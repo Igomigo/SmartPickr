@@ -25,12 +25,14 @@ const selectors = {
   PRODUCT_SPEC_SELECTOR_VALUE,
   PRODUCT_SPECS_SELECTOR_EXTRA,
   PRODUCT_REVIEWS_SELECTOR,
+  PRODUCT_REVIEWS_CARD_SELECTOR,
+  PRODUCT_REVIEWER_COMMENT_SELECTOR,
 };
 
 export const getProductDetails = async (page: Page): Promise<Product> => {
-  // Step 1: Extract product details and review link from the current page
+  // Step 1: Extract product details from the current page
   // We use page.evaluate to run code in the browser context
-  const { details, reviewLinkHref } = await page.evaluate((selectors) => {
+  const details = await page.evaluate((selectors) => {
     // Helper to safely get text
     const getText = (selector: string) =>
       document.querySelector(selector)?.textContent?.trim() || "";
@@ -68,56 +70,45 @@ export const getProductDetails = async (page: Page): Promise<Product> => {
       }
     });
 
-    // Extract Review Link Href if it exists
-    const reviewLinkEl = document.querySelector(
-      selectors.PRODUCT_REVIEWS_SELECTOR,
-    );
-    const reviewLinkHref = reviewLinkEl?.getAttribute("href");
-
     return {
-      details: {
-        productTitle,
-        productPrice,
-        productImages,
-        productDescription,
-        productSpecs,
-      },
-      reviewLinkHref,
+      productTitle,
+      productPrice,
+      productImages,
+      productDescription,
+      productSpecs,
     };
   }, selectors);
 
   // Step 2: Handle Reviews (Node.js context)
-  let reviews: Review[] = [];
-  if (reviewLinkHref) {
-    try {
-      // Navigate to reviews page
-      // Ensure we have a full URL
-      const fullReviewUrl = new URL(reviewLinkHref, page.url()).href;
-      await page.goto(fullReviewUrl);
-      await page.waitForLoadState("domcontentloaded");
+  let productReviews: Review[] = [];
+  // Check if view all button exists
+  const viewAllButton = page.locator(selectors.PRODUCT_REVIEWS_SELECTOR);
+  if ((await viewAllButton.count()) > 0) {
+    await viewAllButton.click();
+    // wait for a few seconds for page to load
+    await page.waitForSelector(selectors.PRODUCT_REVIEWS_CARD_SELECTOR, {
+      timeout: 10000,
+    });
+    // Extract reviews cards
+    const reviewCards = page.locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR);
+    const count = await reviewCards.count();
 
-      const reviewsData = await page.evaluate(() => {
-        return Array.from(
-          document.querySelectorAll(PRODUCT_REVIEWS_CARD_SELECTOR),
-        ).map((el) => {
-          const comment =
-            document
-              .querySelector(PRODUCT_REVIEWER_COMMENT_SELECTOR)
-              ?.textContent.trim() || "";
+    for (let i = 0; i < count; i++) {
+      const card = reviewCards.nth(i);
+      const comment = await card
+        .locator(selectors.PRODUCT_REVIEWER_COMMENT_SELECTOR)
+        .first()
+        .textContent();
 
-          return { comment };
-        });
+      productReviews.push({
+        comment: comment?.trim() || "",
       });
-
-      reviews = reviewsData;
-    } catch (error) {
-      console.error("Error navigating to reviews page:", error);
     }
   }
 
   // Return the product details
   return {
     ...details,
-    productReviews: reviews,
+    productReviews,
   };
 };

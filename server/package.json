@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "ts-node src/test/index.ts"
+    "test": "ts-node src/test/index.ts",
+    "scrape": "tsc && node dist/test/playwright.js"
   },
   "keywords": [],
   "author": "",
