@@ -1,8 +1,8 @@
 export interface Review {
-  reviewerName: string;
+  reviewerName?: string;
   comment: string;
-  rating: "good" | "bad" | "neutral";
-  stars: number;
+  rating?: "good" | "bad" | "neutral";
+  stars?: number;
 }
 export interface Product {
   productImages: string[];

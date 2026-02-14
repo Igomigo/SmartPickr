@@ -3,6 +3,7 @@ import browser from "../../utils/browser";
 import { logger } from "../../utils/logger";
 import { Product } from "./types";
 import { getProductDetails } from "./helpers/getProductDetails";
+import { PRODUCT_SPECS_SELECTOR } from "./constants/selectors";
 
 class JijiScraper {
   constructor() {}
@@ -20,7 +21,10 @@ class JijiScraper {
       // Extract the browser page context
       const { page } = await this.getContext();
       logger.log(`[jiji] starting to scrape the product page...`);
-      await page.goto(url);
+      // Go to the page
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      // Wait for page to load
+      await page.waitForSelector(PRODUCT_SPECS_SELECTOR, { timeout: 1000 });
       const productDetails: Product = await getProductDetails(page);
       logger.log(JSON.stringify(productDetails, null, 2));
     } catch (error) {
