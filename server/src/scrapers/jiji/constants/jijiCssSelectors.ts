@@ -6,4 +6,6 @@ export const PRODUCT_SPECS_SELECTOR =
   ".b-advert-item-details-collapser__visible div.b-advert-attribute";
 export const PRODUCT_SPECS_SELECTOR_EXTRA =
   ".b-advert-item-details-collapser__rest-wrapper div.b-advert-attribute";
+export const PRODUCT_SPECS_SELECTOR_KEY = ".b-advert-attribute__key";
+export const PRODUCT_SPEC_SELECTOR_VALUE = ".b-advert-attribute__value";
 export const PRODUCT_REVIEWS_SELECTORS = "";
