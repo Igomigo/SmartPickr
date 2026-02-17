@@ -31,6 +31,8 @@ const selectors = {
 
 export const getProductDetails = async (page: Page): Promise<Product> => {
   // Step 1: Extract product details from current page
+  // Wait for the deepest stable section of the page before extraction.
+  await page.locator(PRODUCT_SPECS_SELECTOR).first().waitFor();
   // Helper to safely get text
   const getText = async (selector: string) => {
     return (await page.locator(selector)?.textContent())?.trim() || "";
@@ -83,19 +85,16 @@ export const getProductDetails = async (page: Page): Promise<Product> => {
   const viewAllButton = page.locator(selectors.PRODUCT_REVIEWS_SELECTOR);
   if ((await viewAllButton.count()) > 0) {
     await viewAllButton.click();
-    // wait for a few seconds for page to load
-    await page.waitForSelector(selectors.PRODUCT_REVIEWS_CARD_SELECTOR, {
-      timeout: 10000,
-    });
     // Extract reviews cards
-    const comments = await page
+    const comments: Review[] = await page
       .locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR)
       .evaluateAll(
         (els, selectors) => {
           return els.map((el) => {
-            const comment = el
-              .querySelector(selectors.comment_selector)
-              ?.textContent.trim() || "";
+            const comment =
+              el
+                .querySelector(selectors.comment_selector)
+                ?.textContent.trim() || "";
             return { comment };
           });
         },
