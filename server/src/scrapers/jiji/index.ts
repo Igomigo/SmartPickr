@@ -1,8 +1,10 @@
 import { Browser, Page } from "playwright";
 import browser from "../../utils/browser";
 import { logger } from "../../utils/logger";
-import { Product } from "./types";
+import { Product, SearchResultLinks } from "./types";
 import { getProductDetails } from "./helpers/getProductDetails";
+import { buildSearchUrl } from "./helpers/buildUrls";
+import { getSearchDetails } from "./helpers/getSearchResultDetails";
 
 class JijiScraper {
   constructor() {}
@@ -24,16 +26,35 @@ class JijiScraper {
       await page.goto(url, { waitUntil: "domcontentloaded" });
       const productDetails: Product = await getProductDetails(page);
       logger.log(JSON.stringify(productDetails, null, 2));
+      return productDetails;
     } catch (error) {
       logger.error(error instanceof Error ? error.message : String(error));
     }
   }
 
-  public async scrapeSearchResults() {
+  public async scrapeSearchResultPage({
+    searchTerm,
+    searchURL,
+  }: {
+    searchTerm?: string;
+    searchURL?: string;
+  }) {
     try {
-      // 
+      // Construct search url if provided
+      let url: string = "";
+      if (searchTerm) {
+        url = buildSearchUrl(searchTerm);
+      } else if (searchURL) {
+        url = searchURL;
+      }
+      // Scrape search results
+      const searchResults: SearchResultLinks[] = await getSearchDetails(
+        (await this.getContext()).page,
+      );
+      logger.log(JSON.stringify(searchResults, null, 2));
+      return searchResults;
     } catch (error) {
-      
+      logger.error(error instanceof Error ? error.message : String(error));
     }
   }
 }

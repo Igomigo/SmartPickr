@@ -13,6 +13,10 @@ export interface Product {
   productReviews?: Review[];
 }
 
+export interface SearchResultLinks {
+  link: string;
+}
+
 // API Response structure from Jiji
 export interface JijiReviewsApiResponse {
   status: string;
