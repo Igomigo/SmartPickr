@@ -15,8 +15,8 @@ export const getSearchDetails = async (page: Page) => {
     });
 
   // Clean the urls
-  const fullLinks: SearchResultLinks[] = productLinks.filter(Boolean).map((link) => {
-    const fullLink = new URL(link, BASE_URL).href;
+  const fullLinks: SearchResultLinks[] = productLinks.filter(Boolean).map((item) => {
+    const fullLink = new URL(item.link, BASE_URL).href;
     return { link: fullLink };
   });
 
