@@ -1,7 +1,7 @@
 import { Browser, Page } from "playwright";
 import browser from "../utils/browser";
 import { logger } from "../utils/logger";
-import { Product, SearchResultLinks } from "./jiji/types";
+import { Product, SearchResultLinks } from "./types";
 
 abstract class ScraperBase {
   constructor() {}
@@ -37,7 +37,6 @@ abstract class ScraperBase {
         if (linkObj) {
           const result: Product = await this.scrapeProductPage(linkObj.link);
           productDetails.push(result);
-          //await browser.closeBrowser();
         }
       }
       return productDetails;
@@ -46,8 +45,10 @@ abstract class ScraperBase {
       throw new Error(
         `An error occured while scraping products by search - ${error}`,
       );
+    } finally {
+      await browser.closeBrowser();
     }
   }
 }
 
-export default ScraperBase
+export default ScraperBase;

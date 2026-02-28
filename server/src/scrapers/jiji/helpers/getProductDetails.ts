@@ -12,7 +12,8 @@ import {
   PRODUCT_REVIEWS_CARD_SELECTOR,
   PRODUCT_REVIEWER_COMMENT_SELECTOR,
 } from "../constants/selectors";
-import { Product, Review } from "../types";
+import { Product, Review } from "../../types";
+import { getText } from "../../shared/getTextContentFromHtml";
 
 // Organize the selectors
 const selectors = {
@@ -33,13 +34,9 @@ export const getProductDetails = async (page: Page): Promise<Product> => {
   // Step 1: Extract product details from current page
   // Wait for the deepest stable section of the page before extraction.
   await page.locator(PRODUCT_SPECS_SELECTOR).first().waitFor();
-  // Helper to safely get text
-  const getText = async (selector: string) => {
-    return (await page.locator(selector)?.textContent())?.trim() || "";
-  };
-  const productTitle = await getText(PRODUCT_TITLE_SELECTOR);
-  const productPrice = await getText(PRODUCT_PRICE_SELECTOR);
-  const productDescription = await getText(PRODUCT_DESCRIPTION_SELECTOR);
+  const productTitle = await getText(page, PRODUCT_TITLE_SELECTOR);
+  const productPrice = await getText(page, PRODUCT_PRICE_SELECTOR);
+  const productDescription = await getText(page, PRODUCT_DESCRIPTION_SELECTOR);
   const productImages = await page
     .locator(PRODUCT_IMAGES_SELECTOR)
     .evaluateAll((els) => {

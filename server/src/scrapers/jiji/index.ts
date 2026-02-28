@@ -1,14 +1,13 @@
-import { Browser, Page } from "playwright";
-import browser from "../../utils/browser";
 import { logger } from "../../utils/logger";
-import { Product, SearchResultLinks } from "./types";
+import { Product, SearchResultLinks } from "../types";
 import { getProductDetails } from "./helpers/getProductDetails";
 import { buildSearchUrl } from "./helpers/buildUrls";
-import { getSearchDetails } from "./helpers/getSearchResultDetails";
 import ScraperBase from "../BaseScraper";
+import { getSearchResultProductLinks } from "../shared/getSearchResultProductLinks";
+import { BASE_URL } from "./constants/urls";
+import { SEARCH_RESULT_CARDS_SELECTOR } from "./constants/selectors";
 
 class JijiScraper extends ScraperBase {
-
   public async scrapeProductPage(url: string): Promise<Product> {
     try {
       // Extract the browser page context
@@ -47,7 +46,12 @@ class JijiScraper extends ScraperBase {
       await page.goto(url, { waitUntil: "domcontentloaded" });
 
       // Scrape search results
-      const searchResults: SearchResultLinks[] = await getSearchDetails(page);
+      const data = {
+        page,
+        baseUrl: BASE_URL,
+        selector: SEARCH_RESULT_CARDS_SELECTOR
+      }
+      const searchResults: SearchResultLinks[] = await getSearchResultProductLinks(data);
       logger.log(JSON.stringify(searchResults, null, 2));
       return searchResults;
     } catch (error) {
