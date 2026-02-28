@@ -5,7 +5,7 @@ export const PRODUCT_TITLE_SELECTOR = "h1 .b-advert-title-inner";
 export const PRODUCT_PRICE_SELECTOR = 'div[itemprop="price"]';
 
 // Description selector
-export const PRODUCT_DESCRIPTION_SELECTOR = ".b-advert__description-text span";
+export const PRODUCT_DESCRIPTION_SELECTOR = ".b-advert__description-text span.qa-description-text";
 
 // Image selector
 export const PRODUCT_IMAGES_SELECTOR = "img.b-slider-image";

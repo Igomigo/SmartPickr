@@ -5,17 +5,9 @@ import { Product, SearchResultLinks } from "./types";
 import { getProductDetails } from "./helpers/getProductDetails";
 import { buildSearchUrl } from "./helpers/buildUrls";
 import { getSearchDetails } from "./helpers/getSearchResultDetails";
+import ScraperBase from "../BaseScraper";
 
-class JijiScraper {
-  constructor() {}
-
-  private async createPageContext(): Promise<{
-    browserInstance: Browser;
-    page: Page;
-  }> {
-    logger.log("Extracting browser instance and page");
-    return await browser.initializeBrowser();
-  }
+class JijiScraper extends ScraperBase {
 
   public async scrapeProductPage(url: string): Promise<Product> {
     try {
@@ -62,31 +54,6 @@ class JijiScraper {
       logger.error(error instanceof Error ? error.message : String(error));
       throw new Error(
         `An error occured while scraping the search results page - ${error}`,
-      );
-    }
-  }
-
-  public async scrapeProductsBySearch({ searchTerm }: { searchTerm?: string }) {
-    try {
-      // Extract search result product links
-      if (!searchTerm) throw new Error("Search term not provided");
-      const productLinks: SearchResultLinks[] = await this.scrapeSearchResults({
-        searchTerm,
-      });
-      // Iterate through each link and extract details from the respective product pages
-      const productDetails: Product[] = [];
-      for (const linkObj of productLinks) {
-        if (linkObj) {
-          const result: Product = await this.scrapeProductPage(linkObj.link);
-          productDetails.push(result);
-          //await browser.closeBrowser();
-        }
-      }
-      return productDetails;
-    } catch (error) {
-      logger.error(error instanceof Error ? error.message : String(error));
-      throw new Error(
-        `An error occured while scraping products by search - ${error}`,
       );
     }
   }
