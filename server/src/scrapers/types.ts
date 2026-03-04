@@ -3,6 +3,7 @@ export interface Review {
   comment: string;
   rating?: "good" | "bad" | "neutral";
   stars?: number;
+  
 }
 export interface Product {
   productImages: string[];
@@ -11,6 +12,8 @@ export interface Product {
   productDescription: string;
   productSpecs?: Record<string, string>;
   productReviews?: Review[];
+  ProductRatingsScore?: string;
+  ProductReviewsTotal?: number;
 }
 
 export interface SearchResultLinks {

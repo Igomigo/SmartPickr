@@ -17,10 +17,6 @@ import { getText } from "../../shared/getTextContentFromHtml";
 
 // Organize the selectors
 const selectors = {
-  PRODUCT_DESCRIPTION_SELECTOR,
-  PRODUCT_IMAGES_SELECTOR,
-  PRODUCT_PRICE_SELECTOR,
-  PRODUCT_TITLE_SELECTOR,
   PRODUCT_SPECS_SELECTOR,
   PRODUCT_SPECS_SELECTOR_KEY,
   PRODUCT_SPEC_SELECTOR_VALUE,

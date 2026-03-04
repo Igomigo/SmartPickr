@@ -5,10 +5,25 @@ import { Product, SearchResultLinks } from "../types";
 import { SEARCH_RESULT_CARDS_SELECTOR } from "./constants/selectors";
 import { BASE_URL } from "./constants/urls";
 import { buildSearchUrl } from "./helpers/buildUrls";
+import { getProductDetails } from "./helpers/getProductDetails";
 
 class JumiaScraper extends ScraperBase {
   public async scrapeProductPage(url: string): Promise<Product> {
-    throw new Error("Not implemented yet");
+    try {
+      // Extract the browser page context
+      const { page } = await this.createPageContext();
+      logger.log(`[jiji] starting to scrape the product page...`);
+      // Go to the page
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+      const productDetails: Product = await getProductDetails(page);
+      logger.log(JSON.stringify(productDetails, null, 2));
+      return productDetails;
+    } catch (error) {
+      logger.error(error instanceof Error ? error.message : String(error));
+      throw new Error(
+        `An error occured while scraping the product page - ${error}`,
+      );
+    }
   }
 
   public async scrapeSearchResults({
@@ -48,3 +63,5 @@ class JumiaScraper extends ScraperBase {
     }
   }
 }
+
+export default new JumiaScraper();
