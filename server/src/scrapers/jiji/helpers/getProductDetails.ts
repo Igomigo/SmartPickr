@@ -77,7 +77,14 @@ export const getProductDetails = async (page: Page): Promise<Product> => {
   // Check if view all button exists
   const viewAllButton = page.locator(selectors.PRODUCT_REVIEWS_SELECTOR);
   if ((await viewAllButton.count()) > 0) {
-    await viewAllButton.click();
+    await Promise.all([
+      page.waitForLoadState("domcontentloaded"),
+      viewAllButton.click(),
+    ]);
+    await page
+      .locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR)
+      .first()
+      .waitFor({ state: "visible", timeout: 30000 });
     // Extract reviews cards
     const comments: Review[] = await page
       .locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR)

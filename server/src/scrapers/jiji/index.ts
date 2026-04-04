@@ -6,6 +6,7 @@ import ScraperBase from "../BaseScraper";
 import { getSearchResultProductLinks } from "../shared/getSearchResultProductLinks";
 import { BASE_URL } from "./constants/urls";
 import { SEARCH_RESULT_CARDS_SELECTOR } from "./constants/selectors";
+import browser from "../../utils/browser";
 
 class JijiScraper extends ScraperBase {
   public async scrapeProductPage(url: string): Promise<Product> {
@@ -23,6 +24,8 @@ class JijiScraper extends ScraperBase {
       throw new Error(
         `An error occured while scraping the product page - ${error}`,
       );
+    } finally {
+      await browser.closeBrowser();
     }
   }
 
@@ -59,6 +62,8 @@ class JijiScraper extends ScraperBase {
       throw new Error(
         `An error occured while scraping the search results page - ${error}`,
       );
+    } finally {
+      await browser.closeBrowser();
     }
   }
 }

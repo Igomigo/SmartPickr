@@ -35,8 +35,16 @@ abstract class ScraperBase {
       const productDetails: Product[] = [];
       for (const linkObj of productLinks) {
         if (linkObj) {
-          const result: Product = await this.scrapeProductPage(linkObj.link);
-          productDetails.push(result);
+          try {
+            const result: Product = await this.scrapeProductPage(linkObj.link);
+            productDetails.push(result);
+          } catch (error) {
+            logger.error(
+              `Skipping product because scraping failed for ${linkObj.link} - ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            );
+          }
         }
       }
       return productDetails;

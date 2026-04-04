@@ -8,7 +8,7 @@ import jumia from "../scrapers/jumia";
 const url =
   "https://www.jumia.com.ng/fashion-cooperate-business-mens-leather-luxury-wedding-office-formal-shoes-black-226547771.html";
 
-const searchTerm = "Women Bags";
+const searchTerm = "iphone 14 pro max";
 
 const scrapeProduct = async () => {
   await jiji.scrapeProductsBySearch({ searchTerm });
