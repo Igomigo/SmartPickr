@@ -13,12 +13,12 @@ export const getSearchResultProductLinks = async ({
   // Extract product listings links
   const productLinks: SearchResultLinks[] = await page
     .locator(selector)
-    .evaluateAll((els) => {
-      return els.map((el) => {
+    .evaluateAll((els) =>
+      els.map((el) => {
         const link = el.getAttribute("href");
         return { link };
-      });
-    });
+      })
+    );
 
   // Clean the urls
   const fullLinks: SearchResultLinks[] = productLinks

@@ -12,7 +12,7 @@ export const PRODUCT_IMAGES_SELECTOR = "img.b-slider-image";
 
 // Specs selectors
 export const PRODUCT_SPECS_SELECTOR =
-  ".b-advert-item-details-collapser__visible div.b-advert-attribute";
+  ".b-advert-attributes--tiles .b-advert-attribute";
 export const PRODUCT_SPECS_SELECTOR_EXTRA =
   ".b-advert-item-details-collapser__rest-wrapper div.b-advert-attribute";
 export const PRODUCT_SPECS_SELECTOR_KEY = ".b-advert-attribute__key";
