@@ -37,6 +37,7 @@ class Orchestrator {
                 try {
                     onStatus(`Checking listing ${index + 1} of ${productLinksLength}...`);
                     const productDetails: Product = await scraperInstance.scrapeProductPage(productLink.link);
+                    productDetails.productPageUrl = productLink.link;
                     onProduct(productDetails);
                     products.push(productDetails);
                 } catch (error) {

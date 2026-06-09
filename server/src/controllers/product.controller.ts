@@ -1,17 +1,50 @@
 import { Request, Response } from "express";
+import { logger } from "../utils/logger";
+import { SSEConnection } from "../services/sse.service";
+import Orchestrator from "../services/scrape.service";
+import AIService from "../services/ai.service";
+import { Product } from "../scrapers/types";
 
-class ProductAnalysisController {
-  constructor() {}
+class SearchController {
+  private logger;
+  private sse;
 
-  public async analyzeProduct(req: Request, res: Response) {
+  constructor() {
+    this.logger = logger;
+    this.sse = SSEConnection;
+  }
+
+  public async search(req: Request, res: Response) {
+    const { searchTerm, platforms }: { searchTerm: string, platforms: string[] } = req.body;
+    const sseService = new this.sse(res);
+
     try {
-      const { url }: { url: string } = req.body;
-      console.log("Analyzing product...", url);
-    } catch (error) {
-      console.error("Error analyzing product:", error);
-      res.status(500).json({ error: "Failed to analyze product" });
+      const onStatus = (message: string) => {
+        sseService.send("status", { message });
+      };
+
+      const onProduct = (product: Product) => {
+        sseService.send("product", product);
+      }
+
+      const products: Product[] = await Orchestrator.orchestrate(searchTerm, platforms, onStatus, onProduct);
+
+      const comparison = await AIService.compareProducts(products);
+      sseService.send("comparison", comparison);
+
+      const recommendation = await AIService.recommend(comparison, products);
+      sseService.send("recommendation", recommendation);
+
+      sseService.end();
+
+      logger.log("Analyzing product...");
+    } catch (error: any) {
+      sseService.send("status", { message: "Something went wrong. Please try again." });
+      sseService.end();
+
+      logger.error(`Error analyzing product: ${error}`);
     }
   }
 }
 
-export default new ProductAnalysisController();
+export default new SearchController();

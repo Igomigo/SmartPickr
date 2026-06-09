@@ -14,7 +14,7 @@ export class SSEConnection {
     res.on("close", () => this.end());
   }
 
-  send(event: "status" | "comparison" | "recommendation", data: unknown) {
+  send(event: "status" | "product" | "comparison" | "recommendation", data: unknown) {
     this.res.write(`event: ${event}\n`);
     this.res.write(`data: ${JSON.stringify(data)}\n\n`);
   }

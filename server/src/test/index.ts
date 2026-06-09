@@ -1,15 +1,22 @@
-import { Product } from "../scrapers/types";
+import "dotenv/config";
+import { IComparison, IRecommendation, Product } from "../scrapers/types";
 import Orchestrator from "../services/scrape.service";
+import AIService from "../services/ai.service";
 
 const testjijiScraper = async () => {
   try {
     // Testing the orchestrator
     console.log("Starting to test the orchestrator, hopefully this works 🫣...");
-    const searchTerm: string = "iphone 16 pro max";
+    const searchTerm: string = "iPhone 13";
     const platforms: string[] = ["jiji"];
     const orchestrator = Orchestrator;
-    await orchestrator.orchestrate(searchTerm, platforms, onStatus, onProduct);
-    console.log("");
+    const productDetails: Product[] = await orchestrator.orchestrate(searchTerm, platforms, onStatus, onProduct);
+    const comparison: IComparison[] = await AIService.compareProducts(productDetails);
+    console.log("🔥".repeat(20));
+    console.log(comparison);
+    const recommendation: IRecommendation = await AIService.recommend(comparison, productDetails);
+    console.log("🚀".repeat(20));
+    console.log(recommendation);
   } catch (error) {
     console.error("Error scraping product page:", error);
   }
