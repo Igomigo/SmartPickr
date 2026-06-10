@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Picky — design tokens (single source of truth)
+   Visual tokens live here (@theme); motion tokens in design/motion.ts
+   ============================================================ */
+@theme {
+  /* Surfaces */
+  --color-canvas: #f4f1ec; /* warm off-white base */
+  --color-ink: #1c1a18; /* primary text, near-black warm */
+  --color-muted: #6f6a63; /* secondary text */
+  --color-faint: #a8a29a; /* tertiary / hints */
+
+  /* Accent (single, tasteful) */
+  --color-accent: #4f46e5; /* indigo */
+  --color-accent-soft: #6d66ea;
+
+  /* Radii — soft, generous */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  /* Type */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
+    "Segoe UI", system-ui, sans-serif;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden; /* the app manages its own scroll regions */
+}
+
+/* Soft, faint color wash — calm and minimal. Just enough to give the glass
+   a hint of color to refract without making the scene busy. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(40rem 40rem at 18% 22%, rgb(125 110 235 / 0.16), transparent 60%),
+    radial-gradient(36rem 36rem at 82% 18%, rgb(255 176 142 / 0.16), transparent 60%),
+    radial-gradient(44rem 44rem at 72% 88%, rgb(120 196 235 / 0.13), transparent 62%);
+  filter: saturate(112%);
+  pointer-events: none;
+}
+
+/* ============================================================
+   Liquid glass — the one true recipe. Use surgically (chrome).
+
+   Translucent tint so colour behind bleeds through and refracts; a bright
+   specular top edge and diagonal sheen read as wet glass, not frosted plastic.
+   ============================================================ */
+@utility glass {
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 0.5) 0%,
+    rgb(255 255 255 / 0.18) 46%,
+    rgb(255 255 255 / 0.32) 100%
+  );
+  backdrop-filter: blur(18px) saturate(190%) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(190%) brightness(1.06);
+  border: 1px solid rgb(255 255 255 / 0.65);
+  box-shadow:
+    inset 0 1px 1px 0 rgb(255 255 255 / 0.9), /* crisp top highlight */
+    inset 0 -10px 24px -14px rgb(255 255 255 / 0.5), /* soft bottom glow */
+    0 22px 55px -14px rgb(28 26 24 / 0.18); /* lift */
+}
+
+@utility glass-strong {
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 0.66) 0%,
+    rgb(255 255 255 / 0.4) 50%,
+    rgb(255 255 255 / 0.52) 100%
+  );
+  backdrop-filter: blur(30px) saturate(195%) brightness(1.05);
+  -webkit-backdrop-filter: blur(30px) saturate(195%) brightness(1.05);
+  border: 1px solid rgb(255 255 255 / 0.75);
+  box-shadow:
+    inset 0 1px 1px 0 rgb(255 255 255 / 0.95),
+    0 26px 64px -16px rgb(28 26 24 / 0.2);
+}

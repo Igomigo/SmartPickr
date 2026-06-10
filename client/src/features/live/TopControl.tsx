@@ -1,0 +1,75 @@
+import { motion } from "motion/react";
+import { Square, RotateCcw } from "lucide-react";
+import { GlassPanel } from "../../ui/GlassPanel";
+import { settle } from "../../design/motion";
+import type { Phase } from "../../stream/useSearchMachine";
+
+interface TopControlProps {
+  phase: Phase;
+  count: number;
+  onStop: () => void;
+  onReset: () => void;
+}
+
+const LIVE: Phase[] = ["connecting", "live", "comparing", "recommending"];
+
+/**
+ * The persistent floating control — one element, several jobs: a live pulse,
+ * the current phase, the product count, and Stop / New search. (Later this is
+ * also where the search bar morphs into.)
+ */
+export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
+  const isLive = LIVE.includes(phase);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={settle}
+      className="absolute top-6 left-1/2 -translate-x-1/2 z-30"
+    >
+      <GlassPanel radius="pill" className="flex items-center gap-3 h-12 pl-4 pr-1.5">
+        <span className="flex items-center gap-2 text-[14px] font-medium">
+          {isLive && (
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-60 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]" />
+            </span>
+          )}
+          <span className="text-[var(--color-muted)]">{label(phase)}</span>
+          <span className="text-[var(--color-faint)]">·</span>
+          <span className="tabular-nums">{count} found</span>
+        </span>
+
+        {isLive ? (
+          <button
+            onClick={onStop}
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[14px] font-medium text-[var(--color-ink)] hover:bg-white/60 transition-colors cursor-pointer"
+          >
+            <Square size={14} /> Stop
+          </button>
+        ) : (
+          <button
+            onClick={onReset}
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-colors cursor-pointer"
+          >
+            <RotateCcw size={14} /> New search
+          </button>
+        )}
+      </GlassPanel>
+    </motion.div>
+  );
+}
+
+function label(phase: Phase): string {
+  switch (phase) {
+    case "connecting": return "Connecting";
+    case "live": return "Scanning";
+    case "comparing": return "Comparing";
+    case "recommending": return "Recommending";
+    case "done": return "Done";
+    case "stopped": return "Stopped";
+    case "error": return "Something went wrong";
+    default: return "";
+  }
+}
