@@ -16,7 +16,7 @@ class BrowserManager {
   public async launchBrowser(): Promise<Browser> {
     try {
       const browserOptions = {
-        headless: false,
+        headless: true,
         slowMo: 1000,
         args: [
           "--disable-gpu",

@@ -6,17 +6,11 @@ import AIService from "../services/ai.service";
 import { Product } from "../scrapers/types";
 
 class SearchController {
-  private logger;
-  private sse;
-
-  constructor() {
-    this.logger = logger;
-    this.sse = SSEConnection;
-  }
 
   public async search(req: Request, res: Response) {
-    const { searchTerm, platforms }: { searchTerm: string, platforms: string[] } = req.body;
-    const sseService = new this.sse(res);
+    const searchTerm = req.query.searchTerm as string;
+    const platforms = [req.query.platforms].flat() as string[];
+    const sseService = new SSEConnection(res);
 
     try {
       const onStatus = (message: string) => {
@@ -39,7 +33,7 @@ class SearchController {
 
       logger.log("Analyzing product...");
     } catch (error: any) {
-      sseService.send("status", { message: "Something went wrong. Please try again." });
+      sseService.send("status", { message: `Something went wrong. Please try again.` });
       sseService.end();
 
       logger.error(`Error analyzing product: ${error}`);

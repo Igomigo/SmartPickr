@@ -7,7 +7,7 @@ const testjijiScraper = async () => {
   try {
     // Testing the orchestrator
     console.log("Starting to test the orchestrator, hopefully this works 🫣...");
-    const searchTerm: string = "iPhone 13";
+    const searchTerm: string = "iphone 16 pro max";
     const platforms: string[] = ["jiji"];
     const orchestrator = Orchestrator;
     const productDetails: Product[] = await orchestrator.orchestrate(searchTerm, platforms, onStatus, onProduct);

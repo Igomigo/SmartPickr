@@ -1,4 +1,3 @@
-import * as dotenv from "dotenv";
 import express, { Express } from "express";
 import { EnvGuard } from "env-preflight"; // I wrote this package☺️, find it on https://github.com/Igomigo/env-preflight
 import { envRule } from "./utils/env_rule";
@@ -11,7 +10,6 @@ import morgan from "morgan";
 // Routes
 import productRoutes from "./routes/product.routes";
 
-dotenv.config();
 export class App {
   private readonly app: Express;
   private readonly API_PREFIX = "/api/v1";

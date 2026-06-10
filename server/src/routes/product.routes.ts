@@ -3,6 +3,6 @@ import searchController from "../controllers/product.controller";
 
 const router: Router = Router();
 
-router.post("/search", searchController.search);
+router.get("/search", searchController.search);
 
 export default router;
