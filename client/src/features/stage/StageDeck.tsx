@@ -42,13 +42,16 @@ export function StageDeck({ statusLog, products, comparison, recommendation }: S
   }, [comparison, recommendation]);
 
   // Resolve a comparison/recommendation item back to its full product so the
-  // same rich popover can open from anywhere.
-  const byTitle = useMemo(
-    () => new Map(products.map((p) => [p.productTitle, p])),
+  // same rich popover can open from anywhere. Prefer the stable page URL, fall
+  // back to the title.
+  const byUrl = useMemo(
+    () => new Map(products.filter((p) => p.productPageUrl).map((p) => [p.productPageUrl, p])),
     [products]
   );
-  const viewByTitle = (title: string) => {
-    const p = byTitle.get(title);
+  const byTitle = useMemo(() => new Map(products.map((p) => [p.productTitle, p])), [products]);
+
+  const view = (key: { productPageUrl?: string; productTitle: string }) => {
+    const p = (key.productPageUrl && byUrl.get(key.productPageUrl)) || byTitle.get(key.productTitle);
     if (p) setViewing(p);
   };
 
@@ -93,14 +96,14 @@ export function StageDeck({ statusLog, products, comparison, recommendation }: S
               <ComparisonStage
                 comparison={comparison}
                 productCount={products.length}
-                onView={viewByTitle}
+                onView={view}
               />
             )}
             {active === "recommend" && recommendation && (
               <RecommendationStage
                 recommendation={recommendation}
                 productCount={products.length}
-                onView={viewByTitle}
+                onView={view}
               />
             )}
           </motion.div>

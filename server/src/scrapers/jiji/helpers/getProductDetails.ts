@@ -72,37 +72,50 @@ export const getProductDetails = async (page: Page): Promise<Product> => {
     productSpecs,
   };
 
-  // Step 2: Handle Reviews (Node.js context)
+  // Step 2: Handle Reviews (best-effort).
+  // Reviews are secondary, so a failure here must never discard the whole
+  // product. Some listings have a "view all" button but the feedback panel
+  // never renders the expected element — fail fast (don't hang 30s) and just
+  // return the product without reviews.
   let productReviews: Review[] = [];
-  // Check if view all button exists
-  const viewAllButton = page.locator(selectors.PRODUCT_REVIEWS_SELECTOR);
-  if ((await viewAllButton.count()) > 0) {
-    await Promise.all([
-      page.waitForLoadState("domcontentloaded"),
-      viewAllButton.click(),
-    ]);
-    await page
-      .locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR)
-      .first()
-      .waitFor({ state: "visible", timeout: 30000 });
-    // Extract reviews cards
-    const comments: Review[] = await page
-      .locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR)
-      .evaluateAll(
-        (els, selectors) => {
-          return els.map((el) => {
-            const comment =
-              el
-                .querySelector(selectors.comment_selector)
-                ?.textContent.trim() || "";
-            return { comment };
-          });
-        },
-        {
-          comment_selector: selectors.PRODUCT_REVIEWER_COMMENT_SELECTOR,
-        },
-      );
-    productReviews = comments;
+  try {
+    // Check if view all button exists
+    const viewAllButton = page.locator(selectors.PRODUCT_REVIEWS_SELECTOR);
+    if ((await viewAllButton.count()) > 0) {
+      await Promise.all([
+        page.waitForLoadState("domcontentloaded"),
+        viewAllButton.click(),
+      ]);
+      await page
+        .locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR)
+        .first()
+        .waitFor({ state: "visible", timeout: 12000 });
+      // Extract reviews cards
+      const comments: Review[] = await page
+        .locator(selectors.PRODUCT_REVIEWS_CARD_SELECTOR)
+        .evaluateAll(
+          (els, selectors) => {
+            return els.map((el) => {
+              const comment =
+                el
+                  .querySelector(selectors.comment_selector)
+                  ?.textContent.trim() || "";
+              return { comment };
+            });
+          },
+          {
+            comment_selector: selectors.PRODUCT_REVIEWER_COMMENT_SELECTOR,
+          },
+        );
+      productReviews = comments;
+    }
+  } catch {
+    // Reviews panel didn't render in time — proceed with the product anyway.
+    // Logged (not silent) so we can spot listings whose reviews we're missing.
+    console.warn(
+      `[jiji] reviews panel didn't render in time for "${productTitle}" — keeping product without reviews`,
+    );
+    productReviews = [];
   }
 
   // Return the product details

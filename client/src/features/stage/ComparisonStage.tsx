@@ -7,7 +7,7 @@ import type { IComparison } from "../../stream/types";
 interface ComparisonStageProps {
   comparison: IComparison[];
   productCount: number;
-  onView: (title: string) => void;
+  onView: (key: { productPageUrl?: string; productTitle: string }) => void;
 }
 
 /**
@@ -27,7 +27,7 @@ export function ComparisonStage({ comparison, productCount, onView }: Comparison
         <h1 className="text-[26px] font-semibold tracking-[-0.02em]">How the listings stack up</h1>
         <p className="text-[15px] leading-relaxed text-[#54504a] mt-1.5">
           I read through all {productCount} listings and scored each one on what buyers are
-          saying, overall condition and price. Here's how they compare — tap any card for the
+          saying, overall condition and price. Here's how they compare. Tap any card for the
           full details.
         </p>
       </header>
@@ -36,7 +36,11 @@ export function ComparisonStage({ comparison, productCount, onView }: Comparison
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-2">
           {ranked.map((c, i) => (
             <motion.div key={c.productTitle} {...riseIn} transition={{ ...riseIn.transition, delay: i * 0.04 }}>
-              <ComparisonCard c={c} rank={i + 1} onClick={() => onView(c.productTitle)} />
+              <ComparisonCard
+                c={c}
+                rank={i + 1}
+                onClick={() => onView({ productPageUrl: c.productPageUrl, productTitle: c.productTitle })}
+              />
             </motion.div>
           ))}
         </div>
@@ -73,8 +77,14 @@ function ComparisonCard({ c, rank, onClick }: { c: IComparison; rank: number; on
         <div className="text-[16px] font-semibold mt-1">{c.productPrice}</div>
 
         <div className="flex flex-wrap gap-1.5 mt-2">
-          <Pill>{c.reviewSentiment}</Pill>
-          <Pill>{c.reviewCount} reviews</Pill>
+          {Object.values(c.keySpecs).slice(0, 3).map((v) => (
+            <Pill key={v}>{v}</Pill>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 mt-1.5">
+          <Pill tone="glass">{c.reviewSentiment}</Pill>
+          <Pill tone="glass">{c.reviewCount} reviews</Pill>
         </div>
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-3">

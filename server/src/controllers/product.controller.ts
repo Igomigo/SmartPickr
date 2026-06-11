@@ -23,15 +23,24 @@ class SearchController {
 
       const products: Product[] = await Orchestrator.orchestrate(searchTerm, platforms, onStatus, onProduct);
 
+      onStatus("Analyzing the listings...");
+
       const comparison = await AIService.compareProducts(products);
-      sseService.send("comparison", comparison);
+      // Attach each listing's page URL (the "deal") so the UI can open full
+      // product details and link out from the comparison view.
+      const byTitle = new Map(products.map((p) => [p.productTitle, p]));
+      const enrichedComparison = comparison.map((c) => ({
+        ...c,
+        productPageUrl: byTitle.get(c.productTitle)?.productPageUrl,
+      }));
+      sseService.send("comparison", enrichedComparison);
 
       const recommendation = await AIService.recommend(comparison, products);
       sseService.send("recommendation", recommendation);
 
+      // Final signal so the browser EventSource closes cleanly (no reconnect).
+      sseService.send("done", {});
       sseService.end();
-
-      logger.log("Analyzing product...");
     } catch (error: any) {
       sseService.send("status", { message: `Something went wrong. Please try again.` });
       sseService.end();

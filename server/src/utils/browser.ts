@@ -47,7 +47,15 @@ class BrowserManager {
         );
       }
 
-      this.context = await this.browser.newContext();
+      // Give the context a real browser identity so headless isn't flagged as
+      // a bot (the default headless UA is "HeadlessChrome", which trips lazy-
+      // loaders and soft bot-checks → missing images/reviews).
+      this.context = await this.browser.newContext({
+        userAgent:
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
+          "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        viewport: { width: 1366, height: 900 },
+      });
       return this.context;
     } catch (error) {
       logger.error(

@@ -17,6 +17,7 @@ interface ProductPopoverProps {
  */
 export function ProductPopover({ product, onClose }: ProductPopoverProps) {
   const [img, setImg] = useState(0);
+  const [showAllReviews, setShowAllReviews] = useState(false);
   const images = product.productImages;
 
   useEffect(() => {
@@ -104,19 +105,30 @@ export function ProductPopover({ product, onClose }: ProductPopoverProps) {
               <div className="mt-6">
                 <div className="flex items-center gap-2 mb-3">
                   <h3 className="text-[13px] font-semibold uppercase tracking-[0.1em] text-[#33302b]">
-                    Seller reviews
+                    Reviews
                   </h3>
+                  <span className="text-[13px] font-medium text-[var(--color-muted)] tabular-nums">
+                    {reviews.length}
+                  </span>
                   {product.productRatingsScore && (
                     <Pill>★ {product.productRatingsScore}</Pill>
                   )}
                 </div>
                 <div className="space-y-2.5">
-                  {reviews.slice(0, 6).map((r, i) => (
+                  {(showAllReviews ? reviews : reviews.slice(0, 4)).map((r, i) => (
                     <p key={i} className="text-[13px] leading-relaxed text-[#54504a] border-l-2 border-black/[0.08] pl-3">
                       {r.comment}
                     </p>
                   ))}
                 </div>
+                {reviews.length > 4 && (
+                  <button
+                    onClick={() => setShowAllReviews((v) => !v)}
+                    className="mt-3 text-[13px] font-medium text-[var(--color-accent)] hover:underline cursor-pointer"
+                  >
+                    {showAllReviews ? "Show less" : `Show all ${reviews.length} reviews`}
+                  </button>
+                )}
               </div>
             )}
 

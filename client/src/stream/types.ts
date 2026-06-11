@@ -34,6 +34,7 @@ export interface IComparison {
   pros: string[];
   cons: string[];
   reliabilityScore: number;
+  productPageUrl?: string; // the listing's "deal" link, attached server-side
 }
 
 export interface IRecommendationAlternative {

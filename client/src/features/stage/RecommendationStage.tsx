@@ -7,7 +7,7 @@ import type { IRecommendation } from "../../stream/types";
 interface RecommendationStageProps {
   recommendation: IRecommendation;
   productCount: number;
-  onView: (title: string) => void;
+  onView: (key: { productPageUrl?: string; productTitle: string }) => void;
 }
 
 /**
@@ -37,7 +37,7 @@ export function RecommendationStage({ recommendation: r, productCount, onView }:
           <div className="rounded-[24px] overflow-hidden bg-white/80 border border-black/[0.05] shadow-[0_22px_50px_-20px_rgba(28,26,24,0.32)]">
             <button
               type="button"
-              onClick={() => onView(r.productTitle)}
+              onClick={() => onView({ productPageUrl: r.productPageUrl, productTitle: r.productTitle })}
               className="group block w-full overflow-hidden cursor-pointer"
             >
               <img
@@ -66,7 +66,7 @@ export function RecommendationStage({ recommendation: r, productCount, onView }:
                 </a>
                 <button
                   type="button"
-                  onClick={() => onView(r.productTitle)}
+                  onClick={() => onView({ productPageUrl: r.productPageUrl, productTitle: r.productTitle })}
                   className="inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-full border border-black/10 text-[14px] font-medium text-[var(--color-ink)] hover:bg-black/[0.03] transition-colors cursor-pointer"
                 >
                   <Eye size={15} /> View details
@@ -99,7 +99,12 @@ export function RecommendationStage({ recommendation: r, productCount, onView }:
             <Section title="My alternative">
               <motion.button
                 type="button"
-                onClick={() => onView(r.alternative!.productTitle)}
+                onClick={() =>
+                  onView({
+                    productPageUrl: r.alternative!.productPageUrl,
+                    productTitle: r.alternative!.productTitle,
+                  })
+                }
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.995 }}
                 transition={press}

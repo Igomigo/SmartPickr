@@ -33,6 +33,7 @@ export interface IComparison {
   pros: string[];
   cons: string[];
   reliabilityScore: number;
+  productPageUrl?: string;
 }
 
 export interface IRecommendationAlternative {
