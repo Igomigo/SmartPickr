@@ -4,7 +4,7 @@ import { Spine } from "./Spine";
 import { Stage1 } from "../live/Stage1";
 import { ComparisonStage } from "./ComparisonStage";
 import { RecommendationStage } from "./RecommendationStage";
-import { ProductPopover } from "../live/ProductPopover";
+import { ProductPopover } from "../../shared/ProductPopover";
 import { settleSoft } from "../../design/motion";
 import type { Product, IComparison, IRecommendation } from "../../stream/types";
 

@@ -11,6 +11,9 @@ class SearchController {
     const searchTerm = req.query.searchTerm as string;
     const platforms = [req.query.platforms].flat() as string[];
     const sseService = new SSEConnection(res);
+    
+    let stopped = false;
+    res.on("close", () => { stopped = true; });
 
     try {
       const onStatus = (message: string) => {
@@ -21,9 +24,19 @@ class SearchController {
         sseService.send("product", product);
       }
 
-      const products: Product[] = await Orchestrator.orchestrate(searchTerm, platforms, onStatus, onProduct);
+      const products: Product[] = await Orchestrator.orchestrate(
+        searchTerm,
+        platforms,
+        onStatus,
+        onProduct,
+        () => stopped
+      );
+
+      if (stopped) return;
 
       onStatus("Analyzing the listings...");
+
+      onStatus("Comparing the listings side by side...");
 
       const comparison = await AIService.compareProducts(products);
       // Attach each listing's page URL (the "deal") so the UI can open full
@@ -35,8 +48,12 @@ class SearchController {
       }));
       sseService.send("comparison", enrichedComparison);
 
+      onStatus("Choosing the best one for you...");
+
       const recommendation = await AIService.recommend(comparison, products);
       sseService.send("recommendation", recommendation);
+
+      onStatus("Completed.");
 
       // Final signal so the browser EventSource closes cleanly (no reconnect).
       sseService.send("done", {});

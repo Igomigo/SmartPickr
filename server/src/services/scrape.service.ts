@@ -17,11 +17,13 @@ class Orchestrator {
         searchTerm: string,
         platforms: string[],
         onStatus: (s: string) => void,
-        onProduct: (obj: Product) => void
+        onProduct: (obj: Product) => void,
+        shouldStop: () => boolean = () => false,
     ) {
         const products: Product[] = [];
 
         for (const p of platforms) {
+            if (shouldStop()) break; // If system is stopped, then it should stop scraping
             onStatus(`Searching for ${searchTerm} on ${p}...`);
             const scraperInstance = mapper[p as string];
             if (!scraperInstance) {
@@ -34,6 +36,7 @@ class Orchestrator {
             const productLinksLength: number = productLinks.length;
             onStatus(`Found ${productLinksLength} listings - pulling details...`);
             for (const [index, productLink] of productLinks.entries()) {
+                if (shouldStop()) break;
                 try {
                     onStatus(`Checking listing ${index + 1} of ${productLinksLength}...`);
                     const productDetails: Product = await scraperInstance.scrapeProductPage(productLink.link);

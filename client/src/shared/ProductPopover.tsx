@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
-import { GlassPanel } from "../../ui/GlassPanel";
-import { Pill } from "../../ui/Pill";
-import { settleSoft } from "../../design/motion";
-import type { Product } from "../../stream/types";
+import { GlassPanel } from "../ui/GlassPanel";
+import { Pill } from "../ui/Pill";
+import { settleSoft } from "../design/motion";
+import type { Product } from "../stream/types";
 
 interface ProductPopoverProps {
   product: Product;
@@ -14,6 +14,7 @@ interface ProductPopoverProps {
 /**
  * Click-to-open detail view: image carousel + full specs, description and
  * reviews. A dim, blurred scrim sits behind it; everything else keeps running.
+ * Shared across every stage (live grid, comparison, recommendation).
  */
 export function ProductPopover({ product, onClose }: ProductPopoverProps) {
   const [img, setImg] = useState(0);

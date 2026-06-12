@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { motion } from "motion/react";
 import { Square, RotateCcw } from "lucide-react";
 import { GlassPanel } from "../../ui/GlassPanel";
+import { ConfirmPopover } from "../../shared/ConfirmPopover";
 import { settle } from "../../design/motion";
 import type { Phase } from "../../stream/useSearchMachine";
 
@@ -20,6 +22,7 @@ const LIVE: Phase[] = ["connecting", "live", "comparing", "recommending"];
  */
 export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
   const isLive = LIVE.includes(phase);
+  const [confirmStop, setConfirmStop] = useState(false);
 
   return (
     <motion.div
@@ -43,7 +46,7 @@ export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
 
         {isLive ? (
           <button
-            onClick={onStop}
+            onClick={() => setConfirmStop(true)}
             className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[14px] font-medium text-[var(--color-ink)] hover:bg-white/60 transition-colors cursor-pointer"
           >
             <Square size={14} /> Stop
@@ -57,6 +60,20 @@ export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
           </button>
         )}
       </GlassPanel>
+
+      <ConfirmPopover
+        open={confirmStop}
+        tone="danger"
+        title="Stop the search?"
+        description="This ends the search right now and keeps only what's been gathered so far. It can't be resumed."
+        confirmLabel="Stop"
+        cancelLabel="Keep going"
+        onConfirm={() => {
+          setConfirmStop(false);
+          onStop();
+        }}
+        onCancel={() => setConfirmStop(false)}
+      />
     </motion.div>
   );
 }
