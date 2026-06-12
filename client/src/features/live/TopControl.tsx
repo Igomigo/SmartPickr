@@ -23,13 +23,14 @@ const LIVE: Phase[] = ["connecting", "live", "comparing", "recommending"];
 export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
   const isLive = LIVE.includes(phase);
   const [confirmStop, setConfirmStop] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={settle}
-      className="absolute top-6 left-1/2 -translate-x-1/2 z-30"
+      className="absolute top-6 z-30 left-1/2 -translate-x-1/2 max-lg:left-auto max-lg:right-3 max-lg:translate-x-0"
     >
       <GlassPanel radius="pill" className="flex items-center gap-3 h-12 pl-4 pr-1.5">
         <span className="flex items-center gap-2 text-[14px] font-medium">
@@ -53,7 +54,7 @@ export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
           </button>
         ) : (
           <button
-            onClick={onReset}
+            onClick={() => setConfirmReset(true)}
             className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-colors cursor-pointer"
           >
             <RotateCcw size={14} /> New search
@@ -68,11 +69,26 @@ export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
         description="This ends the search right now and keeps only what's been gathered so far. It can't be resumed."
         confirmLabel="Stop"
         cancelLabel="Keep going"
+        className="top-full mt-2 right-0 lg:left-1/2 lg:-translate-x-1/2 lg:right-auto"
         onConfirm={() => {
           setConfirmStop(false);
           onStop();
         }}
         onCancel={() => setConfirmStop(false)}
+      />
+
+      <ConfirmPopover
+        open={confirmReset}
+        title="Start a new search?"
+        description="This clears the current results and takes you back to the start. You can't undo it."
+        confirmLabel="New search"
+        cancelLabel="Stay here"
+        className="top-full mt-2 right-0 lg:left-1/2 lg:-translate-x-1/2 lg:right-auto"
+        onConfirm={() => {
+          setConfirmReset(false);
+          onReset();
+        }}
+        onCancel={() => setConfirmReset(false)}
       />
     </motion.div>
   );

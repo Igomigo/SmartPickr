@@ -8,7 +8,7 @@ import { GlassPanel } from "./GlassPanel";
 export function Logo() {
   return (
     <div className="flex items-center gap-1.5 select-none">
-      <GlassPanel radius="pill" className="grid place-items-center w-9 h-9">
+      <GlassPanel className="grid place-items-center w-9 h-9 rounded-sm">
         <span className="text-[18px] font-bold leading-none tracking-[-0.03em] text-[var(--color-accent)]">
           P
         </span>

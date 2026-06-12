@@ -19,12 +19,12 @@ export function ComparisonStage({ comparison, productCount, onView }: Comparison
   const ranked = [...comparison].sort((a, b) => b.reliabilityScore - a.reliabilityScore);
 
   return (
-    <div className="h-full w-full flex flex-col px-8 pb-6">
+    <div className="h-full w-full flex flex-col px-4 lg:px-8 lg:pb-6 overflow-y-auto lg:overflow-hidden">
       <header className="py-5 shrink-0 max-w-[680px]">
         <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)] mb-1.5">
           AI Comparison
         </div>
-        <h1 className="text-[26px] font-semibold tracking-[-0.02em]">How the listings stack up</h1>
+        <h1 className="text-[22px] lg:text-[26px] font-semibold tracking-[-0.02em]">How the listings stack up</h1>
         <p className="text-[15px] leading-relaxed text-[#54504a] mt-1.5">
           I read through all {productCount} listings and scored each one on what buyers are
           saying, overall condition and price. Here's how they compare. Tap any card for the
@@ -32,8 +32,8 @@ export function ComparisonStage({ comparison, productCount, onView }: Comparison
         </p>
       </header>
 
-      <div className="flex-1 overflow-auto pr-1 pt-1">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-2">
+      <div className="lg:flex-1 lg:overflow-auto lg:pr-1 lg:pt-1">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-2 max-lg:pb-24">
           {ranked.map((c, i) => (
             <motion.div key={c.productTitle} {...riseIn} transition={{ ...riseIn.transition, delay: i * 0.04 }}>
               <ComparisonCard

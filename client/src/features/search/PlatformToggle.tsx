@@ -31,8 +31,10 @@ export function PlatformToggle({ selected, onChange }: PlatformToggleProps) {
   };
 
   return (
-    <div className="flex items-center justify-center gap-2.5">
-      <span className="text-[14px] text-[var(--color-muted)] mr-1">Search on</span>
+    <div className="flex flex-wrap items-center justify-center gap-2">
+      <span className="text-[14px] text-[var(--color-muted)] w-full text-center mb-0.5 md:w-auto md:mb-0 md:mr-1">
+        Search on
+      </span>
       {PLATFORMS.map((p) => {
         const isOn = selected.includes(p.id);
         return (

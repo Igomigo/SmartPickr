@@ -50,9 +50,17 @@ export function ProductPopover({ product, onClose }: ProductPopoverProps) {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[920px] max-h-[86vh]"
       >
-        <GlassPanel strong radius="xl" className="grid grid-cols-1 md:grid-cols-[1fr_1fr] overflow-hidden max-h-[86vh]">
+        <GlassPanel strong radius="xl" className="relative flex flex-col lg:grid lg:grid-cols-[1fr_1fr] overflow-hidden max-h-[86vh]">
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="glass absolute top-3 right-3 z-20 grid place-items-center w-9 h-9 rounded-full text-[var(--color-ink)] cursor-pointer hover:bg-white/70 transition-colors"
+          >
+            <X size={18} />
+          </button>
+
           {/* carousel */}
-          <div className="relative bg-black/5 aspect-square md:aspect-auto md:h-full min-h-[320px]">
+          <div className="relative bg-black/5 aspect-[4/3] shrink-0 lg:aspect-auto lg:h-full lg:min-h-[320px]">
             <img src={images[img]} alt="" className="absolute inset-0 w-full h-full object-cover" />
             {images.length > 1 && (
               <>
@@ -73,15 +81,7 @@ export function ProductPopover({ product, onClose }: ProductPopoverProps) {
 
           {/* details — translucent but readable: glassy feel, dark text on a
               light frosted wash (sits over the panel's backdrop blur) */}
-          <div className="relative p-6 md:p-7 overflow-auto max-h-[86vh] bg-white/70">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 grid place-items-center w-9 h-9 rounded-full hover:bg-black/5 transition-colors cursor-pointer"
-              aria-label="Close"
-            >
-              <X size={18} />
-            </button>
-
+          <div className="relative p-6 lg:p-7 bg-white/70 flex-1 min-h-0 overflow-auto lg:max-h-[86vh]">
             <h2 className="text-[20px] font-semibold leading-tight pr-10">{product.productTitle}</h2>
             <div className="text-[24px] font-semibold mt-2 tracking-[-0.01em]">{product.productPrice}</div>
 

@@ -21,14 +21,14 @@ export function Landing({ onSearch }: LandingProps) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={settle}
-        className="flex flex-col items-center gap-8 w-full"
+        className="flex flex-col items-center gap-6 md:gap-8 w-full max-w-[680px] mx-auto"
       >
         {/* Wordmark */}
-        <div className="flex flex-col items-center gap-3 mb-2">
-          <h1 className="text-[64px] leading-none font-semibold tracking-[-0.03em] text-[var(--color-ink)]">
+        <div className="flex flex-col items-center gap-2.5 md:gap-3 mb-1 md:mb-2">
+          <h1 className="text-[clamp(2.75rem,12vw,4rem)] leading-none font-semibold tracking-[-0.03em] text-[var(--color-ink)]">
             Picky
           </h1>
-          <p className="text-[17px] text-[var(--color-muted)] tracking-[-0.01em]">
+          <p className="text-[15px] md:text-[17px] text-[var(--color-muted)] tracking-[-0.01em] text-center text-balance px-4">
             Tell me what you want. I&rsquo;ll find the one worth buying.
           </p>
         </div>

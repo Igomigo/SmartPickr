@@ -5,7 +5,9 @@ import { Stage1 } from "../live/Stage1";
 import { ComparisonStage } from "./ComparisonStage";
 import { RecommendationStage } from "./RecommendationStage";
 import { ProductPopover } from "../../shared/ProductPopover";
+import { GlassPanel } from "../../ui/GlassPanel";
 import { settleSoft } from "../../design/motion";
+import { useIsMobile } from "../../shared/useIsMobile";
 import type { Product, IComparison, IRecommendation } from "../../stream/types";
 
 type StageId = "live" | "compare" | "recommend";
@@ -18,13 +20,14 @@ interface StageDeckProps {
 }
 
 /**
- * The spine deck. Stages exist as they become available (live → compare →
+ * The stage deck. Stages exist as they become available (live → compare →
  * recommend). The newest auto-takes center stage; the rest collapse to spines
- * on the left. Click a spine to bring that layer back. New layers slide in from
- * the right and settle softly. A single product popover is shared across every
- * stage — any product, comparison row or recommendation can open its details.
+ * on the left (desktop) or a row of tabs at the top (mobile). A single product
+ * popover is shared across every stage.
  */
 export function StageDeck({ statusLog, products, comparison, recommendation }: StageDeckProps) {
+  const isMobile = useIsMobile();
+
   const stages = useMemo(() => {
     const list: { id: StageId; n: number; label: string }[] = [{ id: "live", n: 1, label: "Live" }];
     if (comparison) list.push({ id: "compare", n: 2, label: "Comparison" });
@@ -55,6 +58,80 @@ export function StageDeck({ statusLog, products, comparison, recommendation }: S
     if (p) setViewing(p);
   };
 
+  const renderStage = () => (
+    <>
+      {active === "live" && (
+        <Stage1 statusLog={statusLog} products={products} onView={setViewing} />
+      )}
+      {active === "compare" && comparison && (
+        <ComparisonStage comparison={comparison} productCount={products.length} onView={view} />
+      )}
+      {active === "recommend" && recommendation && (
+        <RecommendationStage recommendation={recommendation} productCount={products.length} onView={view} />
+      )}
+    </>
+  );
+
+  const popover = (
+    <AnimatePresence>
+      {viewing && <ProductPopover product={viewing} onClose={() => setViewing(null)} />}
+    </AnimatePresence>
+  );
+
+  // ---- Mobile: full-screen stage + floating bottom tab bar ---------------
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 pt-[84px]">
+        <div className="relative h-full">
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, x: 32 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 16 }}
+              transition={settleSoft}
+              className="absolute inset-0"
+            >
+              {renderStage()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* floating bottom tabs — content scrolls behind it (thumb-friendly) */}
+        {stages.length > 1 && (
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 max-w-[calc(100%-1.5rem)]">
+            <GlassPanel radius="pill" className="flex items-center gap-1 p-1.5">
+              {stages.map((s) => {
+                const on = s.id === active;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setActive(s.id)}
+                    className={`flex items-center gap-1.5 h-10 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                      on ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-muted)] hover:text-[var(--color-ink)]"
+                    }`}
+                  >
+                    <span
+                      className={`grid place-items-center w-5 h-5 rounded-full text-[11px] font-semibold shrink-0 ${
+                        on ? "bg-white/25 text-white" : "bg-[var(--color-accent)] text-white"
+                      }`}
+                    >
+                      {s.n}
+                    </span>
+                    {s.label}
+                  </button>
+                );
+              })}
+            </GlassPanel>
+          </div>
+        )}
+
+        {popover}
+      </div>
+    );
+  }
+
+  // ---- Desktop: left spines + active layer -------------------------------
   const spines = stages.filter((s) => s.id !== active);
 
   return (
@@ -89,31 +166,12 @@ export function StageDeck({ statusLog, products, comparison, recommendation }: S
             transition={settleSoft}
             className="absolute inset-0"
           >
-            {active === "live" && (
-              <Stage1 statusLog={statusLog} products={products} onView={setViewing} />
-            )}
-            {active === "compare" && comparison && (
-              <ComparisonStage
-                comparison={comparison}
-                productCount={products.length}
-                onView={view}
-              />
-            )}
-            {active === "recommend" && recommendation && (
-              <RecommendationStage
-                recommendation={recommendation}
-                productCount={products.length}
-                onView={view}
-              />
-            )}
+            {renderStage()}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* shared product detail popover */}
-      <AnimatePresence>
-        {viewing && <ProductPopover product={viewing} onClose={() => setViewing(null)} />}
-      </AnimatePresence>
+      {popover}
     </div>
   );
 }

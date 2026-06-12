@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div className="relative h-full w-full">
-      <header className="absolute top-6 left-6 z-30">
+      <header className="absolute top-6 left-6 z-30 max-lg:h-12 max-lg:flex max-lg:items-center">
         <Logo />
       </header>
 

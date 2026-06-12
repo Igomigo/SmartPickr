@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { GlassPanel } from "../ui/GlassPanel";
 import { settle } from "../design/motion";
@@ -17,8 +18,8 @@ interface ConfirmPopoverProps {
 
 /**
  * A small, reusable confirmation popover that anchors beneath its trigger —
- * no full-screen dim, so it never interrupts what's happening on the page. A
- * transparent click-away layer dismisses it. Place inside a `relative` wrapper.
+ * no full-screen dim, so it never interrupts what's happening on the page.
+ * Closes on a click outside the card or Esc. Place inside a positioned wrapper.
  */
 export function ConfirmPopover({
   open,
@@ -31,6 +32,26 @@ export function ConfirmPopover({
   onCancel,
   className = "top-full mt-2 left-1/2 -translate-x-1/2",
 }: ConfirmPopoverProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Close on outside click / Esc. (A transparent overlay won't work here —
+  // transformed ancestors break position:fixed — so we listen on the document.)
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) onCancel();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCancel();
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, onCancel]);
+
   const confirmClass =
     tone === "danger"
       ? "bg-rose-500 hover:bg-rose-600 text-white"
@@ -39,39 +60,35 @@ export function ConfirmPopover({
   return (
     <AnimatePresence>
       {open && (
-        <>
-          {/* transparent click-away — dismiss without dimming the page */}
-          <div className="fixed inset-0 z-40" onClick={onCancel} />
-
-          <motion.div
-            initial={{ opacity: 0, y: -6, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.97 }}
-            transition={settle}
-            className={`absolute z-50 ${className}`}
-          >
-            <GlassPanel strong radius="lg" className="w-[280px] p-4">
-              <h4 className="text-[15px] font-semibold text-[var(--color-ink)]">{title}</h4>
-              {description && (
-                <p className="text-[13px] leading-relaxed text-[#54504a] mt-1.5">{description}</p>
-              )}
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={onCancel}
-                  className="flex-1 h-9 rounded-full text-[14px] font-medium text-[var(--color-ink)] border border-black/10 hover:bg-black/[0.04] transition-colors cursor-pointer"
-                >
-                  {cancelLabel}
-                </button>
-                <button
-                  onClick={onConfirm}
-                  className={`flex-1 h-9 rounded-full text-[14px] font-medium transition-colors cursor-pointer ${confirmClass}`}
-                >
-                  {confirmLabel}
-                </button>
-              </div>
-            </GlassPanel>
-          </motion.div>
-        </>
+        <motion.div
+          ref={cardRef}
+          initial={{ opacity: 0, y: -6, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -6, scale: 0.97 }}
+          transition={settle}
+          className={`absolute z-50 ${className}`}
+        >
+          <GlassPanel strong radius="lg" className="w-[280px] p-4">
+            <h4 className="text-[15px] font-semibold text-[var(--color-ink)]">{title}</h4>
+            {description && (
+              <p className="text-[13px] leading-relaxed text-[#54504a] mt-1.5">{description}</p>
+            )}
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={onCancel}
+                className="flex-1 h-9 rounded-full text-[14px] font-medium text-[var(--color-ink)] border border-black/10 hover:bg-black/[0.04] transition-colors cursor-pointer"
+              >
+                {cancelLabel}
+              </button>
+              <button
+                onClick={onConfirm}
+                className={`flex-1 h-9 rounded-full text-[14px] font-medium transition-colors cursor-pointer ${confirmClass}`}
+              >
+                {confirmLabel}
+              </button>
+            </div>
+          </GlassPanel>
+        </motion.div>
       )}
     </AnimatePresence>
   );

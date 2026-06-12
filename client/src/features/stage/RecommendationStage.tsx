@@ -17,12 +17,12 @@ interface RecommendationStageProps {
  */
 export function RecommendationStage({ recommendation: r, productCount, onView }: RecommendationStageProps) {
   return (
-    <div className="h-full w-full overflow-auto px-8 pb-10">
+    <div className="h-full w-full overflow-auto px-4 lg:px-8 pb-24 lg:pb-10">
       <header className="py-6 max-w-[780px]">
         <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)] mb-2.5">
           AI Recommendation
         </div>
-        <h1 className="text-[32px] font-semibold leading-[1.12] tracking-[-0.02em]">
+        <h1 className="text-[26px] lg:text-[32px] font-semibold leading-[1.12] tracking-[-0.02em]">
           {r.headline}
         </h1>
         <p className="text-[16px] leading-relaxed text-[#54504a] mt-3">
@@ -31,7 +31,7 @@ export function RecommendationStage({ recommendation: r, productCount, onView }:
         </p>
       </header>
 
-      <div className="grid lg:grid-cols-[420px_1fr] gap-10 items-start">
+      <div className="grid lg:grid-cols-[420px_1fr] gap-6 lg:gap-10 items-start">
         {/* winner */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={settle}>
           <div className="rounded-[24px] overflow-hidden bg-white/80 border border-black/[0.05] shadow-[0_22px_50px_-20px_rgba(28,26,24,0.32)]">
