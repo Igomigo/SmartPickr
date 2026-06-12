@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { GlassPanel } from "../ui/GlassPanel";
 import { Pill } from "../ui/Pill";
+import { ImageLightbox } from "./ImageLightbox";
 import { settleSoft } from "../design/motion";
 import type { Product } from "../stream/types";
 
@@ -19,17 +20,19 @@ interface ProductPopoverProps {
 export function ProductPopover({ product, onClose }: ProductPopoverProps) {
   const [img, setImg] = useState(0);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [zoom, setZoom] = useState(false);
   const images = product.productImages;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      // Esc closes the zoomed image first, then the popover.
+      if (e.key === "Escape") zoom ? setZoom(false) : onClose();
       if (e.key === "ArrowRight") setImg((i) => (i + 1) % images.length);
       if (e.key === "ArrowLeft") setImg((i) => (i - 1 + images.length) % images.length);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [images.length, onClose]);
+  }, [images.length, onClose, zoom]);
 
   const specs = Object.entries(product.productSpecs ?? {});
   const reviews = product.productReviews ?? [];
@@ -61,7 +64,14 @@ export function ProductPopover({ product, onClose }: ProductPopoverProps) {
 
           {/* carousel */}
           <div className="relative bg-black/5 aspect-[4/3] shrink-0 lg:aspect-auto lg:h-full lg:min-h-[320px]">
-            <img src={images[img]} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <button
+              type="button"
+              onClick={() => setZoom(true)}
+              aria-label="View image full screen"
+              className="absolute inset-0 cursor-zoom-in"
+            >
+              <img src={images[img]} alt="" className="w-full h-full object-cover" />
+            </button>
             {images.length > 1 && (
               <>
                 <CarouselBtn side="left" onClick={() => setImg((i) => (i - 1 + images.length) % images.length)} />
@@ -146,6 +156,14 @@ export function ProductPopover({ product, onClose }: ProductPopoverProps) {
           </div>
         </GlassPanel>
       </motion.div>
+
+      <ImageLightbox
+        open={zoom}
+        images={images}
+        index={img}
+        onIndex={setImg}
+        onClose={() => setZoom(false)}
+      />
     </motion.div>
   );
 }

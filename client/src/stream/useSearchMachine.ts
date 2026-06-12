@@ -1,12 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import type { Product, IComparison, IRecommendation } from "./types";
 import type { SearchSource } from "./source";
-import { mockSource } from "./mockSource";
 import { liveSource } from "./liveSource";
-import { USE_MOCK } from "./config";
-
-/** Live server by default; recorded mock when VITE_USE_MOCK=true. */
-const defaultSource: SearchSource = USE_MOCK ? mockSource : liveSource;
 
 /**
  * Lifecycle of a search:
@@ -50,7 +45,7 @@ const initialState: SearchState = {
  * what this returns. Source is injectable — defaults to the mock replay; pass
  * the live EventSource source in Phase 6 without touching this hook.
  */
-export function useSearchMachine(source: SearchSource = defaultSource) {
+export function useSearchMachine(source: SearchSource = liveSource) {
   const [state, setState] = useState<SearchState>(initialState);
   const cancelRef = useRef<(() => void) | null>(null);
 
