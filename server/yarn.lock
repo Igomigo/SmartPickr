@@ -4021,7 +4021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.57.0":
+"playwright@npm:1.59.1":
   version: 1.59.1
   resolution: "playwright@npm:1.59.1"
   dependencies:
@@ -4428,7 +4428,7 @@ __metadata:
     helmet: "npm:^8.1.0"
     morgan: "npm:^1.10.1"
     nodemon: "npm:^3.1.14"
-    playwright: "npm:^1.57.0"
+    playwright: "npm:1.59.1"
     puppeteer: "npm:^24.17.1"
     ts-node: "npm:^10.9.2"
     tsx: "npm:^4.22.4"

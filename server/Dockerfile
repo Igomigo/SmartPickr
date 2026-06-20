@@ -1,8 +1,10 @@
 # Playwright's official image ships Chromium + all the OS libraries it needs,
 # so headless scraping works out of the box (the #1 cause of "works locally,
 # crashes on deploy" is missing system deps — this avoids it).
-# Pin to the same Playwright version as package.json (1.57.0).
-FROM mcr.microsoft.com/playwright:v1.57.0-noble
+# Pin to the same Playwright version the lockfile resolves to (1.59.1).
+# This MUST match package.json's playwright version, or the bundled Chromium
+# won't exist at runtime ("Executable doesn't exist at /ms-playwright/...").
+FROM mcr.microsoft.com/playwright:v1.59.1-noble
 
 WORKDIR /app
 

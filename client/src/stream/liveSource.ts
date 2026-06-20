@@ -15,7 +15,7 @@ export const liveSource: SearchSource = (params, handlers) => {
   query.set("searchTerm", params.term);
   params.platforms.forEach((p) => query.append("platforms", p));
 
-  const es = new EventSource(`${API_BASE}/api/v1/search?${query.toString()}`);
+  const es = new EventSource(`${API_BASE}/search?${query.toString()}`);
   let finished = false;
 
   const finish = () => {
