@@ -50,14 +50,14 @@ export function TopControl({ phase, count, onStop, onReset }: TopControlProps) {
             onClick={() => setConfirmStop(true)}
             className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[14px] font-medium text-[var(--color-ink)] hover:bg-white/60 transition-colors cursor-pointer"
           >
-            <Square size={14} /> Stop
+            <Square size={14} /> <span className="hidden md:inline">Stop</span>
           </button>
         ) : (
           <button
             onClick={() => setConfirmReset(true)}
             className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full text-[14px] font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-colors cursor-pointer"
           >
-            <RotateCcw size={14} /> New search
+            <RotateCcw size={14} /> <span className="hidden md:inline">New search</span>
           </button>
         )}
       </GlassPanel>

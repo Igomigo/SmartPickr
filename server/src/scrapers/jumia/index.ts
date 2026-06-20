@@ -1,3 +1,4 @@
+import browser from "../../utils/browser";
 import { logger } from "../../utils/logger";
 import ScraperBase from "../BaseScraper";
 import { getSearchResultProductLinks } from "../shared/getSearchResultProductLinks";
@@ -9,10 +10,10 @@ import { getProductDetails } from "./helpers/getProductDetails";
 
 class JumiaScraper extends ScraperBase {
   public async scrapeProductPage(url: string): Promise<Product> {
+    // Create a new page (browser is reused across the search, closed by the orchestrator)
+    const page = await browser.newPage();
     try {
-      // Extract the browser page context
-      const { page } = await this.createPageContext();
-      logger.log(`[jiji] starting to scrape the product page...`);
+      logger.log(`[jumia] starting to scrape the product page...`);
       // Go to the page
       await page.goto(url, { waitUntil: "domcontentloaded" });
       const productDetails: Product = await getProductDetails(page);
@@ -23,6 +24,8 @@ class JumiaScraper extends ScraperBase {
       throw new Error(
         `An error occured while scraping the product page - ${error}`,
       );
+    } finally {
+      await page.close();
     }
   }
 
@@ -33,6 +36,8 @@ class JumiaScraper extends ScraperBase {
     searchTerm?: string;
     searchURL?: string;
   }): Promise<SearchResultLinks[]> {
+    // Create a new page (browser is reused across the search, closed by the orchestrator)
+    const page = await browser.newPage();
     try {
       // Construct search url if provided
       let url: string = "";
@@ -42,7 +47,6 @@ class JumiaScraper extends ScraperBase {
         url = searchURL;
       }
       // Navigate to the page
-      const { page } = await this.createPageContext();
       await page.goto(url, { waitUntil: "domcontentloaded" });
 
       // Scrape search results
@@ -60,6 +64,8 @@ class JumiaScraper extends ScraperBase {
       throw new Error(
         `An error occured while scraping the search results page - ${error}`,
       );
+    } finally {
+      await page.close();
     }
   }
 }

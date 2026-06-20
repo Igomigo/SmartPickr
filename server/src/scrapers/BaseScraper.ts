@@ -1,18 +1,9 @@
-import { Browser, Page } from "playwright";
 import browser from "../utils/browser";
 import { logger } from "../utils/logger";
 import { Product, SearchResultLinks } from "./types";
 
 abstract class ScraperBase {
   constructor() {}
-
-  protected async createPageContext(): Promise<{
-    browserInstance: Browser;
-    page: Page;
-  }> {
-    logger.log("Extracting browser instance and page contexts...");
-    return await browser.initializeBrowser();
-  }
 
   abstract scrapeProductPage(url: string): Promise<Product>;
 

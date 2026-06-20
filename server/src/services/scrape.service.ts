@@ -1,55 +1,65 @@
 import { mapper } from "../config/platformRegistry";
 import { Product, SearchResultLinks } from "../scrapers/types";
 import { logger } from "../utils/logger";
+import browser from "../utils/browser";
 
 // ========== types ============
 export type mapperI = Record<string, any>;
 
 // ========== main class ===========
 class Orchestrator {
-    private logger;
+  private logger;
 
-    constructor() {
-        this.logger = logger
-    }
+  constructor() {
+    this.logger = logger;
+  }
 
-    public async orchestrate(
-        searchTerm: string,
-        platforms: string[],
-        onStatus: (s: string) => void,
-        onProduct: (obj: Product) => void,
-        shouldStop: () => boolean = () => false,
-    ) {
-        const products: Product[] = [];
+  public async orchestrate(
+    searchTerm: string,
+    platforms: string[],
+    onStatus: (s: string) => void,
+    onProduct: (obj: Product) => void,
+    shouldStop: () => boolean = () => false,
+  ) {
+    const products: Product[] = [];
 
-        for (const p of platforms) {
-            if (shouldStop()) break; // If system is stopped, then it should stop scraping
-            onStatus(`Searching for ${searchTerm} on ${p}...`);
-            const scraperInstance = mapper[p as string];
-            if (!scraperInstance) {
-                this.logger.error(`No scraper for platform ${p}`);
-                continue;
-            }
-            const productLinks: SearchResultLinks[] = await scraperInstance.scrapeSearchResults(
-                { searchTerm }
-            );
-            const productLinksLength: number = productLinks.length;
-            onStatus(`Found ${productLinksLength} listings - pulling details...`);
-            for (const [index, productLink] of productLinks.entries()) {
-                if (shouldStop()) break;
-                try {
-                    onStatus(`Checking listing ${index + 1} of ${productLinksLength}...`);
-                    const productDetails: Product = await scraperInstance.scrapeProductPage(productLink.link);
-                    productDetails.productPageUrl = productLink.link;
-                    onProduct(productDetails);
-                    products.push(productDetails);
-                } catch (error) {
-                    this.logger.error(`An error occured while scraping product page for - "${productLink.link}"`);
-                }
-            }
+    try {
+      for (const p of platforms) {
+        if (shouldStop()) break; // If system is stopped, then it should stop scraping
+        onStatus(`Searching for ${searchTerm} on ${p}...`);
+        const scraperInstance = mapper[p as string];
+        if (!scraperInstance) {
+          this.logger.error(`No scraper for platform ${p}`);
+          continue;
         }
-        return products;
+        const productLinks: SearchResultLinks[] =
+          await scraperInstance.scrapeSearchResults({ searchTerm });
+        const productLinksLength: number = productLinks.length;
+        onStatus(`Found ${productLinksLength} listings - pulling details...`);
+        for (const [index, productLink] of productLinks.entries()) {
+          if (shouldStop()) break;
+          try {
+            onStatus(
+              `Checking listing ${index + 1} of ${productLinksLength}...`,
+            );
+            const productDetails: Product =
+              await scraperInstance.scrapeProductPage(productLink.link);
+            productDetails.productPageUrl = productLink.link;
+            onProduct(productDetails);
+            products.push(productDetails);
+          } catch (error) {
+            this.logger.error(
+              `An error occured while scraping product page for - "${productLink.link}"`,
+            );
+          }
+        }
+      }
+    } finally {
+      // Close the shared browser once the whole search is done
+      await browser.closeBrowser();
     }
+    return products;
+  }
 }
 
 export default new Orchestrator();

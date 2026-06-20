@@ -10,9 +10,9 @@ import browser from "../../utils/browser";
 
 class JijiScraper extends ScraperBase {
   public async scrapeProductPage(url: string): Promise<Product> {
+    // Open a page (browser is reused across the search, closed by the orchestrator)
+    const page = await browser.newPage();
     try {
-      // Extract the browser page context
-      const { page } = await this.createPageContext();
       logger.log(`[jiji] starting to scrape the product page...`);
       // Go to the page
       await page.goto(url, { waitUntil: "domcontentloaded" });
@@ -25,7 +25,7 @@ class JijiScraper extends ScraperBase {
         `An error occured while scraping the product page - ${error}`,
       );
     } finally {
-      await browser.closeBrowser();
+      await page.close();
     }
   }
 
@@ -36,25 +36,26 @@ class JijiScraper extends ScraperBase {
     searchTerm?: string;
     searchURL?: string;
   }): Promise<SearchResultLinks[]> {
+    // Construct search url if provided
+    let url: string = "";
+    if (searchTerm) {
+      url = buildSearchUrl(searchTerm);
+    } else if (searchURL) {
+      url = searchURL;
+    }
+    // Open a page (browser is reused across the search, closed by the orchestrator)
+    const page = await browser.newPage();
     try {
-      // Construct search url if provided
-      let url: string = "";
-      if (searchTerm) {
-        url = buildSearchUrl(searchTerm);
-      } else if (searchURL) {
-        url = searchURL;
-      }
-      // Navigate to the page
-      const { page } = await this.createPageContext();
       await page.goto(url, { waitUntil: "domcontentloaded" });
 
       // Scrape search results
       const data = {
         page,
         baseUrl: BASE_URL,
-        selector: SEARCH_RESULT_CARDS_SELECTOR
-      }
-      const searchResults: SearchResultLinks[] = await getSearchResultProductLinks(data);
+        selector: SEARCH_RESULT_CARDS_SELECTOR,
+      };
+      const searchResults: SearchResultLinks[] =
+        await getSearchResultProductLinks(data);
       logger.log(JSON.stringify(searchResults, null, 2));
       return searchResults;
     } catch (error) {
@@ -63,7 +64,7 @@ class JijiScraper extends ScraperBase {
         `An error occured while scraping the search results page - ${error}`,
       );
     } finally {
-      await browser.closeBrowser();
+      await page.close();
     }
   }
 }

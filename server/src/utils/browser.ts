@@ -12,9 +12,12 @@ class BrowserManager {
 
   /**
    * This function launches a browser instance.
+   * If one is already running, it is reused (so a single search shares one
+   * browser instead of launching a fresh Chromium per product).
    */
   public async launchBrowser(): Promise<Browser> {
     try {
+      if (this.browser) return this.browser;
       const browserOptions = {
         headless: true,
         slowMo: 1000,
@@ -46,6 +49,8 @@ class BrowserManager {
           "Browser not launched, you must launch the browser first using launchBrowser()"
         );
       }
+
+      if (this.context) return this.context;
 
       // Give the context a real browser identity so headless isn't flagged as
       // a bot (the default headless UA is "HeadlessChrome", which trips lazy-
@@ -87,6 +92,16 @@ class BrowserManager {
   }
 
   /**
+   * Opens a single page, launching the browser + context first if needed.
+   * The browser is reused across calls; only the page is per-operation.
+   */
+  public async newPage(): Promise<Page> {
+    await this.launchBrowser();
+    await this.createBrowserContext();
+    return this.createPage();
+  }
+
+  /**
    * This function closes the browser and browser context instances.
    */
   public async closeBrowser(): Promise<void> {
@@ -102,21 +117,6 @@ class BrowserManager {
       logger.log(`Browser closed successfully`);
     } catch (error) {
       logger.error(`Error closing browser: ${(error as Error).message}`);
-      throw error;
-    }
-  }
-
-  /**
-   * This function initializes the browser and browser context instances.
-   */
-  public async initializeBrowser(): Promise<{ browserInstance: Browser; page: Page }> {
-    try {
-      const browserInstance = await this.launchBrowser();
-      await this.createBrowserContext();
-      const page = await this.createPage();
-      return { browserInstance, page };
-    } catch (error) {
-      logger.error(`Error initializing browser: ${(error as Error).message}`);
       throw error;
     }
   }
