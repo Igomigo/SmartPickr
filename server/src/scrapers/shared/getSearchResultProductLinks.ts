@@ -14,8 +14,9 @@ export const getSearchResultProductLinks = async ({
   // Diagnostic: what did the page actually serve? (catches geo-redirects /
   // block pages where the URL or content differs from a normal browser.)
   const matchCount = await page.locator(selector).count();
+  const bodyText = (await page.locator("body").innerText().catch(() => "")) || "";
   logger.log(
-    `[search] final url: ${page.url()} | title: "${await page.title()}" | "${selector}" matched ${matchCount}`,
+    `[search] final url: ${page.url()} | title: "${await page.title()}" | "${selector}" matched ${matchCount} | bodyLen ${bodyText.length} | snippet: ${bodyText.slice(0, 300).replace(/\s+/g, " ")}`,
   );
 
   // Extract product listings links
