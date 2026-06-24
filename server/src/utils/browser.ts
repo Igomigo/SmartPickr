@@ -21,13 +21,18 @@ class BrowserManager {
       const browserOptions = {
         headless: true,
         slowMo: 1000,
+        // Use real Chrome, not bundled Chromium — a genuine Chrome binary has a
+        // far more legitimate fingerprint (Cloudflare flags Chromium more).
+        channel: "chrome",
         args: [
           "--disable-gpu",
+          // Required in containers (tiny /dev/shm) — not a bot signal.
           "--disable-dev-shm-usage",
           "--disable-setuid-sandbox",
           "--no-sandbox",
-          "--disable-web-security",
-          "--disable-features=site-per-process",
+          // Dropped --disable-web-security and --disable-features=site-per-process:
+          // both are non-standard flags that make the browser look MORE bot-like
+          // to Cloudflare. Removing them improves the fingerprint.
         ],
       };
       this.browser = await chromium.launch(browserOptions);
@@ -52,10 +57,27 @@ class BrowserManager {
 
       if (this.context) return this.context;
 
+      // Route through a residential proxy when configured (PROXY_URL set).
+      // Needed in the cloud because Jiji's Cloudflare blocks datacenter IPs;
+      // a residential IP looks like a real user. Unset locally = direct (no-op).
+      const proxy = process.env.PROXY_URL
+        ? {
+            server: process.env.PROXY_URL,
+            ...(process.env.PROXY_USERNAME && {
+              username: process.env.PROXY_USERNAME,
+            }),
+            ...(process.env.PROXY_PASSWORD && {
+              password: process.env.PROXY_PASSWORD,
+            }),
+          }
+        : undefined;
+      if (proxy) logger.log(`Using proxy: ${proxy.server}`);
+
       // Give the context a real browser identity so headless isn't flagged as
       // a bot (the default headless UA is "HeadlessChrome", which trips lazy-
       // loaders and soft bot-checks → missing images/reviews).
       this.context = await this.browser.newContext({
+        ...(proxy && { proxy }),
         userAgent:
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
           "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",

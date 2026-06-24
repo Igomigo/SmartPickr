@@ -1,10 +1,9 @@
 import { mapper } from "../config/platformRegistry";
 import { Product, SearchResultLinks } from "../scrapers/types";
 import { logger } from "../utils/logger";
-import browser from "../utils/browser";
-
-// ========== types ============
-export type mapperI = Record<string, any>;
+// Browser no longer used — the jiji-api scraper hits the JSON API directly (no
+// headless Chromium). Kept commented for the Playwright path (see scrapers/jiji).
+// import browser from "../utils/browser";
 
 // ========== main class ===========
 class Orchestrator {
@@ -23,8 +22,7 @@ class Orchestrator {
   ) {
     const products: Product[] = [];
 
-    try {
-      for (const p of platforms) {
+    for (const p of platforms) {
         if (shouldStop()) break; // If system is stopped, then it should stop scraping
         onStatus(`Searching for ${searchTerm} on ${p}...`);
         const scraperInstance = mapper[p as string];
@@ -44,7 +42,8 @@ class Orchestrator {
             );
             const productDetails: Product =
               await scraperInstance.scrapeProductPage(productLink.link);
-            productDetails.productPageUrl = productLink.link;
+            // The scraper sets the canonical productPageUrl itself; don't
+            // overwrite it with productLink.link (which is a guid for jiji-api).
             onProduct(productDetails);
             products.push(productDetails);
           } catch (error) {
@@ -54,10 +53,6 @@ class Orchestrator {
           }
         }
       }
-    } finally {
-      // Close the shared browser once the whole search is done
-      await browser.closeBrowser();
-    }
     return products;
   }
 }

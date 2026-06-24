@@ -4,8 +4,9 @@ import { getProductDetails } from "./helpers/getProductDetails";
 import { buildSearchUrl } from "./helpers/buildUrls";
 import ScraperBase from "../BaseScraper";
 import { getSearchResultProductLinks } from "../shared/getSearchResultProductLinks";
+import { passCloudflareChallenge } from "../shared/passCloudflareChallenge";
 import { BASE_URL } from "./constants/urls";
-import { SEARCH_RESULT_CARDS_SELECTOR } from "./constants/selectors";
+import { SEARCH_RESULT_CARDS_SELECTOR, PRODUCT_TITLE_SELECTOR } from "./constants/selectors";
 import browser from "../../utils/browser";
 
 class JijiScraper extends ScraperBase {
@@ -16,6 +17,8 @@ class JijiScraper extends ScraperBase {
       logger.log(`[jiji] starting to scrape the product page...`);
       // Go to the page
       await page.goto(url, { waitUntil: "domcontentloaded" });
+      // Clear Cloudflare if it challenges this page too.
+      await passCloudflareChallenge(page, PRODUCT_TITLE_SELECTOR);
       const productDetails: Product = await getProductDetails(page);
       logger.log(JSON.stringify(productDetails, null, 2));
       return productDetails;
@@ -47,6 +50,9 @@ class JijiScraper extends ScraperBase {
     const page = await browser.newPage();
     try {
       await page.goto(url, { waitUntil: "domcontentloaded" });
+
+      // Clear Cloudflare's challenge if it shows up (first hit on a session).
+      await passCloudflareChallenge(page, SEARCH_RESULT_CARDS_SELECTOR);
 
       // Scrape search results
       const data = {
