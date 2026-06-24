@@ -16,6 +16,9 @@ export const JIJI_LISTING_ENDPOINT = `${JIJI_BASE_URL}/api_web/v1/listing`;
 // Product detail: GET /<guid> -> { advert: {...}, seller: {...} }
 export const JIJI_ITEM_ENDPOINT = `${JIJI_BASE_URL}/api_web/v1/item`;
 
+// Seller reviews: GET /<sellerGuid>/<page>.json -> { results: [...], stats, count }
+export const JIJI_OPINIONS_ENDPOINT = `${JIJI_BASE_URL}/api_web/v1/opinions`;
+
 // A real browser identity keeps the request looking legitimate.
 export const JIJI_API_HEADERS: Record<string, string> = {
   "User-Agent":

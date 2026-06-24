@@ -3,7 +3,6 @@ export interface Review {
   comment: string;
   rating?: "good" | "bad" | "neutral";
   stars?: number;
-
 }
 export interface Product {
   productImages: string[];

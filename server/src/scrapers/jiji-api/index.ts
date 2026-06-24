@@ -1,12 +1,14 @@
 import { logger } from "../../utils/logger";
-import { Product, SearchResultLinks } from "../types";
+import { Product, Review, SearchResultLinks } from "../types";
 import {
   JIJI_BASE_URL,
   JIJI_ITEM_ENDPOINT,
   JIJI_LISTING_ENDPOINT,
 } from "./constants";
 import { fetchJson } from "./helpers/fetchJson";
+import { fetchReviews } from "./helpers/fetchReviews";
 import { parseProduct } from "./helpers/parseProduct";
+import { parseReviews } from "./helpers/parseReviews";
 import { JijiItemResponse, JijiListingResponse } from "./types";
 
 /**
@@ -61,7 +63,15 @@ class JijiApiScraper {
       ? pagePath
       : `${JIJI_BASE_URL}${pagePath}`;
 
-    return parseProduct(data, productPageUrl);
+    const productData = parseProduct(data, productPageUrl);
+    let reviews: Review[] = [];
+    const sellerGuid = data.seller?.guid;
+    if (sellerGuid && (productData.productReviewsTotal ?? 0) > 0) {
+      const reviewsObject = await fetchReviews(sellerGuid);
+      reviews = parseReviews(reviewsObject);
+    }
+
+    return { ...productData, productReviews: reviews };
   }
 }
 
